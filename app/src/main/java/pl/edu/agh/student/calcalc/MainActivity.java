@@ -1,6 +1,7 @@
 package pl.edu.agh.student.calcalc;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
@@ -18,7 +19,9 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     TextView txvTimer;
-    CalCalcTimer timer;
+    CaloriesCalculatorTimer cctTimer;
+    FloatingActionButton fabRun;
+    FloatingActionButton fabPause;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,42 +31,11 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         txvTimer = (TextView) findViewById(R.id.txvTimer);
-        timer = new CalCalcTimer(txvTimer);
+        cctTimer = new CaloriesCalculatorTimer(txvTimer);
+        fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
+        fabPause = (FloatingActionButton) findViewById(R.id.fabPause);
 
-        FloatingActionButton fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
-        FloatingActionButton fabPause = (FloatingActionButton) findViewById(R.id.fabPause);
-
-        fabRun.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                String test = (timer.isStarted()) ? "TRUE" : "FALSE";
-                Snackbar.make(view, test, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                if (timer.isStarted()){
-                    timer.stop();
-                }
-                else{
-                    timer.start();
-                }
-            }
-
-        });
-
-        fabPause.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                if(timer.isStarted()) {
-                    if(timer.isPaused()) {
-                        timer.resume();
-                    }
-                    else {
-                        timer.pause();
-                    }
-                }
-            }
-        });
+        initializeListeners();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -109,7 +81,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -130,5 +102,37 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void initializeListeners() {
+        fabRun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String test = (cctTimer.isStarted()) ? "TRUE" : "FALSE";
+                Snackbar.make(view, test, Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                if (cctTimer.isStarted()){
+                    cctTimer.stop();
+                }
+                else{
+                    cctTimer.start();
+                }
+            }
+
+        });
+
+        fabPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(cctTimer.isStarted()) {
+                    if(cctTimer.isPaused()) {
+                        cctTimer.resume();
+                    }
+                    else {
+                        cctTimer.pause();
+                    }
+                }
+            }
+        });
     }
 }

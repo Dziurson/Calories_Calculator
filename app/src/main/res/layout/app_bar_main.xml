@@ -30,10 +30,10 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPause"
-        android:layout_width="25dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginRight="64dp"
+        android:layout_marginEnd="64dp"
         android:layout_marginBottom="16dp"
         app:srcCompat="@android:drawable/ic_media_pause" />
 

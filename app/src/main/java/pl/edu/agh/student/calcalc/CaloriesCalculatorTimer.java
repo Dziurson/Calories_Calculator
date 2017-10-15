@@ -1,7 +1,6 @@
 package pl.edu.agh.student.calcalc;
 
 import android.widget.TextView;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -11,7 +10,7 @@ import java.util.TimerTask;
  * Created by jakub on 14.10.2017.
  */
 
-public class CalCalcTimer {
+public class CaloriesCalculatorTimer {
 
     private boolean isStarted;
     private boolean isPaused;
@@ -20,15 +19,15 @@ public class CalCalcTimer {
     private Timer timer;
     private TimerTask timertask;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-    private TextView textViewToUpdate;
+    private final TextView textViewToUpdate;
 
 
-    CalCalcTimer(final TextView textViewToUpdate) {
+    CaloriesCalculatorTimer(final TextView textViewToUpdate) {
         this.textViewToUpdate = textViewToUpdate;
         isStarted = false;
     }
 
-    public void start() {
+    void start() {
         timer = new Timer();
         timertask = new TimerTask() {
             @Override
@@ -44,28 +43,28 @@ public class CalCalcTimer {
         isPaused = false;
     }
 
-    public void stop() {
+    void stop() {
         timertask.cancel();
         timer.cancel();
         timer.purge();
         isStarted = false;
     }
 
-    public void resume() {
+    void resume() {
         startDate = new Date(startDate.getTime() + new Date().getTime() - pausedDate.getTime());
         isPaused = false;
     }
 
-    public void pause() {
+    void pause() {
         isPaused = true;
         pausedDate = new Date();
     }
 
-    public boolean isStarted() {
+    boolean isStarted() {
         return isStarted;
     }
 
-    public boolean isPaused() {
+    boolean isPaused() {
         return isPaused;
     }
 }
