@@ -1,4 +1,4 @@
-package pl.edu.agh.student.calcalc;
+package pl.edu.agh.student.calcalc.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +15,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.utilities.CaloriesCalculatorTimer;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -22,6 +26,7 @@ public class MainActivity extends AppCompatActivity
     CaloriesCalculatorTimer cctTimer;
     FloatingActionButton fabRun;
     FloatingActionButton fabPause;
+    NavigationView navSideMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,9 +48,14 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.dmi_home);
-        navigationView.setNavigationItemSelectedListener(this);
+        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
+        navSideMenu.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        navSideMenu.setCheckedItem(R.id.dmi_home);
+        super.onResume();
     }
 
     @Override
@@ -93,7 +103,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.dmi_parameters) {
 
         } else if (id == R.id.dmi_settings) {
-
+            ActivityHelper.bringActivityToFront(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
 
         } else if (id == R.id.dmi_send) {

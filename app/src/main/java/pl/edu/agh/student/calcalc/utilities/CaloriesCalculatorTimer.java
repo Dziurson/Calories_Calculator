@@ -1,4 +1,4 @@
-package pl.edu.agh.student.calcalc;
+package pl.edu.agh.student.calcalc.utilities;
 
 import android.support.annotation.NonNull;
 import android.widget.TextView;
@@ -23,12 +23,12 @@ public class CaloriesCalculatorTimer {
     private final TextView textViewToUpdate;
 
 
-    CaloriesCalculatorTimer(@NonNull final TextView textViewToUpdate) {
+    public CaloriesCalculatorTimer(@NonNull final TextView textViewToUpdate) {
         this.textViewToUpdate = textViewToUpdate;
         isStarted = false;
     }
 
-    void start() {
+    public void start() {
         timer = new Timer();
         timertask = new TimerTask() {
             @Override
@@ -44,28 +44,28 @@ public class CaloriesCalculatorTimer {
         isPaused = false;
     }
 
-    void stop() {
+    public void stop() {
         timertask.cancel();
         timer.cancel();
         timer.purge();
         isStarted = false;
     }
 
-    void resume() {
+    public void resume() {
         startDate = new Date(startDate.getTime() + new Date().getTime() - pausedDate.getTime());
         isPaused = false;
     }
 
-    void pause() {
+    public void pause() {
         isPaused = true;
         pausedDate = new Date();
     }
 
-    boolean isStarted() {
+    public boolean isStarted() {
         return isStarted;
     }
 
-    boolean isPaused() {
+    public boolean isPaused() {
         return isPaused;
     }
 }
