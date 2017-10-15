@@ -26,16 +26,16 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_media_play" />
+        app:srcCompat="@drawable/ic_icon_start" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="64dp"
+        android:layout_marginEnd="80dp"
         android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_media_pause" />
+        app:srcCompat="@drawable/ic_icon_pause" />
 
     <include layout="@layout/content_main" />
 

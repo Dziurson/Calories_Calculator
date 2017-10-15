@@ -1,5 +1,6 @@
 package pl.edu.agh.student.calcalc;
 
+import android.support.annotation.NonNull;
 import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,7 +23,7 @@ public class CaloriesCalculatorTimer {
     private final TextView textViewToUpdate;
 
 
-    CaloriesCalculatorTimer(final TextView textViewToUpdate) {
+    CaloriesCalculatorTimer(@NonNull final TextView textViewToUpdate) {
         this.textViewToUpdate = textViewToUpdate;
         isStarted = false;
     }

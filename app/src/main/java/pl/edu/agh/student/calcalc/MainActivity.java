@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.dmi_home);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -85,17 +86,17 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.dmi_home) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.dmi_map) {
 
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.dmi_parameters) {
 
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.dmi_settings) {
 
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.dmi_share) {
+
+        } else if (id == R.id.dmi_send) {
 
         }
 
@@ -108,14 +109,17 @@ public class MainActivity extends AppCompatActivity
         fabRun.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String test = (cctTimer.isStarted()) ? "TRUE" : "FALSE";
-                Snackbar.make(view, test, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
                 if (cctTimer.isStarted()){
                     cctTimer.stop();
+                    Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
+                    fabRun.setImageResource(R.drawable.ic_icon_start);
+                    fabPause.setImageResource(R.drawable.ic_icon_pause);
+                    txvTimer.setText(R.string.default_timer_value);
                 }
                 else{
                     cctTimer.start();
+                    Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
+                    fabRun.setImageResource(R.drawable.ic_icon_stop);
                 }
             }
 
@@ -127,9 +131,13 @@ public class MainActivity extends AppCompatActivity
                 if(cctTimer.isStarted()) {
                     if(cctTimer.isPaused()) {
                         cctTimer.resume();
+                        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
+                        fabPause.setImageResource(R.drawable.ic_icon_pause);
                     }
                     else {
                         cctTimer.pause();
+                        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
+                        fabPause.setImageResource(R.drawable.ic_icon_start);
                     }
                 }
             }
