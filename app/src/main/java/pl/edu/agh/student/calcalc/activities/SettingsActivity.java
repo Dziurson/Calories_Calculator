@@ -1,10 +1,7 @@
 package pl.edu.agh.student.calcalc.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +17,8 @@ import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    NavigationView navSideMenu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,9 +32,14 @@ public class SettingsActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setCheckedItem(R.id.dmi_settings);
-        navigationView.setNavigationItemSelectedListener(this);
+        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
+        navSideMenu.setNavigationItemSelectedListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        navSideMenu.setCheckedItem(R.id.dmi_settings);
+        super.onResume();
     }
 
     @Override
@@ -72,7 +76,7 @@ public class SettingsActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
@@ -80,8 +84,8 @@ public class SettingsActivity extends AppCompatActivity
             ActivityHelper.bringActivityToFront(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
 
-        } else if (id == R.id.dmi_parameters) {
-
+        } else if (id == R.id.dmi_properties) {
+            ActivityHelper.bringActivityToFront(this,PropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
 
         } else if (id == R.id.dmi_share) {
