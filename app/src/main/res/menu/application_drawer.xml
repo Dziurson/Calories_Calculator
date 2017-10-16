@@ -24,7 +24,7 @@
             android:title="@string/dmi_settings_label" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/grp_social_submenu">
         <menu>
             <item
                 android:id="@+id/dmi_share"
