@@ -6,4 +6,5 @@
     <string name="dmi_settings_label">Settings</string>
     <string name="dmi_share_label">Share</string>
     <string name="dmi_send_label">Send</string>
+    <string name="grp_social_submenu">Communication</string>
 </resources>

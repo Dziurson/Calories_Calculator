@@ -81,13 +81,13 @@ public class PropertiesActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.dmi_home) {
-            ActivityHelper.bringActivityToFront(this,MainActivity.class);
+            ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
 
         } else if (id == R.id.dmi_properties) {
 
         } else if (id == R.id.dmi_settings) {
-            ActivityHelper.bringActivityToFront(this,SettingsActivity.class);
+            ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
 
         } else if (id == R.id.dmi_send) {

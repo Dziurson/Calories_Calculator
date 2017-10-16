@@ -81,11 +81,11 @@ public class SettingsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.dmi_home) {
-            ActivityHelper.bringActivityToFront(this,MainActivity.class);
+            ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
 
         } else if (id == R.id.dmi_properties) {
-            ActivityHelper.bringActivityToFront(this,PropertiesActivity.class);
+            ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
 
         } else if (id == R.id.dmi_share) {

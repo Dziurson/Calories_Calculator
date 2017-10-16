@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.dmi_map) {
 
         } else if (id == R.id.dmi_properties) {
-            ActivityHelper.bringActivityToFront(this,PropertiesActivity.class);
+            ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
-            ActivityHelper.bringActivityToFront(this,SettingsActivity.class);
+            ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
 
         } else if (id == R.id.dmi_send) {
