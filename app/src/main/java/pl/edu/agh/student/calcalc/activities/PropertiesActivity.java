@@ -83,7 +83,7 @@ public class PropertiesActivity extends AppCompatActivity
         if (id == R.id.dmi_home) {
             ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
-
+            ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         } else if (id == R.id.dmi_properties) {
 
         } else if (id == R.id.dmi_settings) {

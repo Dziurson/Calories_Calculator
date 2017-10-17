@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pl.edu.agh.student.calcalc">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -37,6 +42,19 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="pl.edu.agh.student.calcalc.activities.MainActivity" />
         </activity>
+        <activity
+            android:name=".activities.MapActivity"
+            android:label="@string/title_activity_map"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="pl.edu.agh.student.calcalc.activities.MainActivity" />
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyC9H8qFdEqAMaiUy-a8pKe9gX7dsuQTHNc" />
     </application>
 
 </manifest>

@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity
         if (id == R.id.dmi_home) {
             ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
-
+            ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {

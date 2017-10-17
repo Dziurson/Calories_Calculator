@@ -4,32 +4,31 @@ import android.support.annotation.NonNull;
 import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * Created by jakub on 14.10.2017.
  */
 
-public class CaloriesCalculatorTimer {
+public class Timer {
 
     private boolean isStarted;
     private boolean isPaused;
     private Date startDate;
     private Date pausedDate;
-    private Timer timer;
+    private java.util.Timer timer;
     private TimerTask timertask;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
     private final TextView textViewToUpdate;
 
 
-    public CaloriesCalculatorTimer(@NonNull final TextView textViewToUpdate) {
+    public Timer(@NonNull final TextView textViewToUpdate) {
         this.textViewToUpdate = textViewToUpdate;
         isStarted = false;
     }
 
     public void start() {
-        timer = new Timer();
+        timer = new java.util.Timer();
         timertask = new TimerTask() {
             @Override
             public void run() {

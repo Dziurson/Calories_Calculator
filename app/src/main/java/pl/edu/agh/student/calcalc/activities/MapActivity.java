@@ -1,10 +1,10 @@
 package pl.edu.agh.student.calcalc.activities;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.view.View;
+import android.support.v4.app.ActivityCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,34 +13,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.controls.MapScrollView;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
-import pl.edu.agh.student.calcalc.utilities.Timer;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MapActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
-    TextView txvTimer;
-    Timer tmrActivityDuration;
-    FloatingActionButton fabRun;
-    FloatingActionButton fabPause;
     NavigationView navSideMenu;
+    SupportMapFragment mapGoogleMap;
+    MapScrollView msvActivityContentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_map);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        txvTimer = (TextView) findViewById(R.id.txvTimer);
-        tmrActivityDuration = new Timer(txvTimer);
-        fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
-        fabPause = (FloatingActionButton) findViewById(R.id.fabPause);
-
-        initializeListeners();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -50,12 +46,33 @@ public class MainActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
+        mapGoogleMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapGoogleMap);
+        mapGoogleMap.getMapAsync(this);
+        msvActivityContentContainer = (MapScrollView) findViewById(R.id.map_scroll_view);
+        msvActivityContentContainer.listenForViewTouchEvent(mapGoogleMap.getView());
     }
 
     @Override
     protected void onResume() {
-        navSideMenu.setCheckedItem(R.id.dmi_home);
+        navSideMenu.setCheckedItem(R.id.dmi_map);
         super.onResume();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                new LatLng(47.17, 27.5699), 16));
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        googleMap.setMyLocationEnabled(true);
     }
 
     @Override
@@ -71,7 +88,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.map, menu);
         return true;
     }
 
@@ -97,9 +114,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.dmi_home) {
-
+            ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
-            ActivityHelper.findOrCreateActivity(this,MapActivity.class);
+
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
@@ -113,44 +130,5 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    private void initializeListeners() {
-        fabRun.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (tmrActivityDuration.isStarted()){
-                    tmrActivityDuration.stop();
-                    Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
-                    fabRun.setImageResource(R.drawable.ic_icon_start);
-                    fabPause.setImageResource(R.drawable.ic_icon_pause);
-                    txvTimer.setText(R.string.default_timer_value);
-                }
-                else{
-                    tmrActivityDuration.start();
-                    Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
-                    fabRun.setImageResource(R.drawable.ic_icon_stop);
-                }
-            }
-
-        });
-
-        fabPause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(tmrActivityDuration.isStarted()) {
-                    if(tmrActivityDuration.isPaused()) {
-                        tmrActivityDuration.resume();
-                        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
-                        fabPause.setImageResource(R.drawable.ic_icon_pause);
-                    }
-                    else {
-                        tmrActivityDuration.pause();
-                        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
-                        fabPause.setImageResource(R.drawable.ic_icon_start);
-                    }
-                }
-            }
-        });
     }
 }
