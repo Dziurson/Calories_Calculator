@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity
 
     TextView txvTimer;
     Timer tmrActivityDuration;
-    AnimatedFloatingActionButton fabRun;
+    FloatingActionButton fabRun;
     AnimatedFloatingActionButton fabPause;
     NavigationView navSideMenu;
 
@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 
         txvTimer = (TextView) findViewById(R.id.txvTimer);
         tmrActivityDuration = new Timer(txvTimer, this);
-        fabRun = (AnimatedFloatingActionButton) findViewById(R.id.fabRun);
+        fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
         fabPause = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
 
         initializeListeners();
