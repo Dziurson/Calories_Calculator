@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/dmi_home"
+            android:icon="@drawable/ic_menu_home"
+            android:title="@string/dmi_home_label"/>
+        <item
+            android:id="@+id/dmi_import_file"
+            android:icon="@drawable/ic_menu_import_file"
+            android:title="@string/dmi_import_file_label" />
+        <item
+            android:id="@+id/dmi_map"
+            android:icon="@drawable/ic_menu_map"
+            android:title="@string/dmi_map_label" />
+        <item
+            android:id="@+id/dmi_properties"
+            android:icon="@drawable/ic_menu_properties"
+            android:title="@string/dmi_properties_label" />
+        <item
+            android:id="@+id/dmi_settings"
+            android:icon="@drawable/ic_menu_settings"
+            android:title="@string/dmi_settings_label" />
+    </group>
+
+    <item android:title="@string/grp_social_submenu">
+        <menu>
+            <item
+                android:id="@+id/dmi_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/dmi_share_label" />
+            <item
+                android:id="@+id/dmi_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/dmi_send_label" />
+        </menu>
+    </item>
+
+</menu>

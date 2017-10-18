@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="pl.edu.agh.student.calcalc.activities.MainActivity">
+    tools:context="pl.edu.agh.student.calcalc.activities.PropertiesActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -20,26 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabRun"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_icon_start" />
-
-    <pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton
-        app:animation_enabled="true"
-        app:animation_duration="500"
-        android:visibility="invisible"
-        android:id="@+id/fabPause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@drawable/ic_icon_pause" />
-
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_properties" />
 
 </android.support.design.widget.CoordinatorLayout>

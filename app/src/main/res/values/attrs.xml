@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name = "pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton">
+        <attr name="animation_enabled" format="boolean" />
+        <attr name="animation_duration" format="integer" />
+    </declare-styleable>
+</resources>

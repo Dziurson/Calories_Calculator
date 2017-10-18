@@ -5,22 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="pl.edu.agh.student.calcalc.activities.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:context="pl.edu.agh.student.calcalc.activities.MapActivity"
+    tools:showIn="@layout/app_bar_map">
 
-    <ScrollView
-        android:layout_width="384dp"
-        android:layout_height="511dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+    <pl.edu.agh.student.calcalc.controls.ScrollViewTouchEnabled
+        android:id="@+id/map_scroll_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
-        <include layout="@layout/content_scroll_view_main" />
-    </ScrollView>
+        <include layout="@layout/content_scroll_view_map" />
+    </pl.edu.agh.student.calcalc.controls.ScrollViewTouchEnabled>
 </android.support.constraint.ConstraintLayout>

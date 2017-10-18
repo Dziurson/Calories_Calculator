@@ -4,15 +4,20 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txvTimer"
+        android:id="@+id/txvTimerLabel"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:textSize="20sp"
+        android:text="@string/timer_label" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txvTimer"
+        android:layout_marginLeft="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:textSize="32sp"
+        android:text="@string/default_timer_value" />
 
 </LinearLayout>
