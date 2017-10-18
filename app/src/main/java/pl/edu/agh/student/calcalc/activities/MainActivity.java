@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
@@ -24,8 +25,8 @@ public class MainActivity extends AppCompatActivity
 
     TextView txvTimer;
     Timer tmrActivityDuration;
-    FloatingActionButton fabRun;
-    FloatingActionButton fabPause;
+    AnimatedFloatingActionButton fabRun;
+    AnimatedFloatingActionButton fabPause;
     NavigationView navSideMenu;
 
     @Override
@@ -36,9 +37,9 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         txvTimer = (TextView) findViewById(R.id.txvTimer);
-        tmrActivityDuration = new Timer(txvTimer);
-        fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
-        fabPause = (FloatingActionButton) findViewById(R.id.fabPause);
+        tmrActivityDuration = new Timer(txvTimer, this);
+        fabRun = (AnimatedFloatingActionButton) findViewById(R.id.fabRun);
+        fabPause = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
 
         initializeListeners();
 
@@ -125,11 +126,13 @@ public class MainActivity extends AppCompatActivity
                     fabRun.setImageResource(R.drawable.ic_icon_start);
                     fabPause.setImageResource(R.drawable.ic_icon_pause);
                     txvTimer.setText(R.string.default_timer_value);
+                    fabPause.setVisibility(View.INVISIBLE);
                 }
                 else{
                     tmrActivityDuration.start();
                     Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
                     fabRun.setImageResource(R.drawable.ic_icon_stop);
+                    fabPause.setVisibility(View.VISIBLE);
                 }
             }
 

@@ -20,7 +20,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
+    <pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton
         android:id="@+id/fabRun"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,7 +28,8 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_icon_start" />
 
-    <android.support.design.widget.FloatingActionButton
+    <pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton
+        android:visibility="invisible"
         android:id="@+id/fabPause"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

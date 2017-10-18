@@ -10,37 +10,45 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapScrollView extends ScrollView {
-    List<View> alvListenedViews = new ArrayList<>();
+public class ScrollViewTouchEnabled extends ScrollView {
+    List<View> alvTouchEnabledViews = new ArrayList<>();
 
-    public MapScrollView(Context context) {
+    public ScrollViewTouchEnabled(Context context) {
         super(context);
     }
 
-    public MapScrollView(Context context, AttributeSet attrs) {
+    public ScrollViewTouchEnabled(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public MapScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ScrollViewTouchEnabled(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public MapScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ScrollViewTouchEnabled(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public <T extends View> void listenForViewTouchEvent(T view) {
-        alvListenedViews.add(view);
+    public <T extends View> void enableTouchForView(T view) {
+        alvTouchEnabledViews.add(view);
     }
+    public <T extends View> boolean disableTouchForView(T view) {
+        if(alvTouchEnabledViews.contains(view)) {
+            alvTouchEnabledViews.remove(view);
+            return true;
+        }
+        return false;
+    }
+
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (alvListenedViews.size() > 0) {
+        if (alvTouchEnabledViews.size() > 0) {
             int x = (int) event.getX();
             int y = (int) event.getY() + getScrollY();
             Rect bounds = new Rect();
 
-            for (View view : alvListenedViews) {
+            for (View view : alvTouchEnabledViews) {
                 view.getHitRect(bounds);
                 if (bounds.contains(x, y)) {
                     return false;
