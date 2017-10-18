@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewDebug;
 
 import pl.edu.agh.student.calcalc.helpers.BooleanHelper;
 import pl.edu.agh.student.calcalc.helpers.IntegerHelper;
@@ -18,9 +17,8 @@ import pl.edu.agh.student.calcalc.helpers.IntegerHelper;
 
 public class AnimatedFloatingActionButton extends FloatingActionButton {
 
-    @ViewDebug.ExportedProperty
-    public int mAnimationDuration;
-    public boolean mAnimationEnabled;
+    private int mAnimationDuration;
+    private boolean mAnimationEnabled;
 
     public AnimatedFloatingActionButton(Context context) {
         super(context);
