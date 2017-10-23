@@ -20,4 +20,38 @@
         android:textSize="32sp"
         android:text="@string/default_timer_value" />
 
+    <TextView
+        android:id="@+id/latitudeLabel"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/latitude_label" />
+
+    <TextView
+        android:id="@+id/txvLatitude"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="@string/default_coordinates" />
+
+    <TextView
+        android:id="@+id/longitudeLabel"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/longitude_label" />
+
+    <TextView
+        android:id="@+id/txvLongitude"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="@string/default_coordinates" />
+
 </LinearLayout>

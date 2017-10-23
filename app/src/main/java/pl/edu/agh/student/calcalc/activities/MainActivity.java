@@ -1,5 +1,6 @@
 package pl.edu.agh.student.calcalc.activities;
 
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -16,18 +17,26 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
+import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.helpers.LocationHelper;
+import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
+import pl.edu.agh.student.calcalc.reflection.LocationCommand;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     TextView txvTimer;
+    TextView txvLatitude;
+    TextView txvLongitude;
     Timer tmrActivityDuration;
     FloatingActionButton fabRun;
     AnimatedFloatingActionButton fabPause;
     NavigationView navSideMenu;
+    ApplicationLocationListener allLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,11 +44,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Properties.mainActivity = this;
 
         txvTimer = (TextView) findViewById(R.id.txvTimer);
         tmrActivityDuration = new Timer(txvTimer, this);
         fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
         fabPause = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
+        allLocationListener = ApplicationLocationListener.getInstance();
+        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
+        txvLatitude = (TextView) findViewById(R.id.txvLatitude);
+        txvLongitude = (TextView) findViewById(R.id.txvLongitude);
 
         initializeListeners();
 
@@ -49,7 +63,6 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
     }
 
@@ -153,6 +166,15 @@ public class MainActivity extends AppCompatActivity
                         fabPause.setImageResource(R.drawable.ic_icon_start);
                     }
                 }
+            }
+        });
+
+        allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
+            @Override
+            public void execute(Location location) {
+                Tuple<String,String> locFormatted = LocationHelper.format(location);
+                txvLatitude.setText(locFormatted.first);
+                txvLongitude.setText(locFormatted.second);
             }
         });
     }
