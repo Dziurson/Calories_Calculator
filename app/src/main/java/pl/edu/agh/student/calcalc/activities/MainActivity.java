@@ -1,10 +1,12 @@
 package pl.edu.agh.student.calcalc.activities;
 
+import android.Manifest;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,7 +29,7 @@ import pl.edu.agh.student.calcalc.reflection.LocationCommand;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
     TextView txvTimer;
     TextView txvLatitude;
@@ -37,33 +39,35 @@ public class MainActivity extends AppCompatActivity
     AnimatedFloatingActionButton fabPause;
     NavigationView navSideMenu;
     ApplicationLocationListener allLocationListener;
+    Toolbar toolbar;
+    DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
         Properties.mainActivity = this;
 
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         txvTimer = (TextView) findViewById(R.id.txvTimer);
         tmrActivityDuration = new Timer(txvTimer, this);
         fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
         fabPause = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
-        allLocationListener = ApplicationLocationListener.getInstance();
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         txvLatitude = (TextView) findViewById(R.id.txvLatitude);
         txvLongitude = (TextView) findViewById(R.id.txvLongitude);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        allLocationListener = ApplicationLocationListener.getInstance();
 
+        setSupportActionBar(toolbar);
         initializeListeners();
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        navSideMenu.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -107,23 +111,22 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.dmi_home) {
-
-        } else if (id == R.id.dmi_map) {
+        if (id == R.id.dmi_map) {
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
-        } else if (id == R.id.dmi_properties) {
+        }
+        else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
-        } else if (id == R.id.dmi_settings) {
+        }
+        else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
-        } else if (id == R.id.dmi_share) {
-
-        } else if (id == R.id.dmi_send) {
+        }
+        else if (id == R.id.dmi_share) {
 
         }
+        else if (id == R.id.dmi_send) {
 
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -134,41 +137,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 if (tmrActivityDuration.isStarted()){
-                    tmrActivityDuration.stop();
-                    Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
-                    fabRun.setImageResource(R.drawable.ic_icon_start);
-                    fabPause.setImageResource(R.drawable.ic_icon_pause);
-                    txvTimer.setText(R.string.default_timer_value);
-                    fabPause.setVisibility(View.INVISIBLE);
+                    stopTracking(view);
                 }
                 else{
-                    tmrActivityDuration.start();
-                    Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
-                    fabRun.setImageResource(R.drawable.ic_icon_stop);
-                    fabPause.setVisibility(View.VISIBLE);
+                    if (ActivityHelper.checkForPermissions(MainActivity.this,Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                        startTracking(view);
+                    }
+                    else {
+                        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},Properties.PERMISSION_TO_WRITE_EXTERNAL_STORAGE);
+                    }
                 }
             }
 
         });
-
         fabPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(tmrActivityDuration.isStarted()) {
                     if(tmrActivityDuration.isPaused()) {
-                        tmrActivityDuration.resume();
-                        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
-                        fabPause.setImageResource(R.drawable.ic_icon_pause);
+                        resumeTracking(view);
                     }
                     else {
-                        tmrActivityDuration.pause();
-                        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
-                        fabPause.setImageResource(R.drawable.ic_icon_start);
+                        pauseTracking(view);
                     }
                 }
             }
         });
-
         allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
             @Override
             public void execute(Location location) {
@@ -177,5 +171,49 @@ public class MainActivity extends AppCompatActivity
                 txvLongitude.setText(locFormatted.second);
             }
         });
+        navSideMenu.setNavigationItemSelectedListener(this);
+        if(ActivityHelper.checkForPermissions(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
+            allLocationListener.requestLocationData();
+        }
+        else {
+            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Properties.PERMISSION_TO_ACCESS_FINE_LOCATION);
+        }
+    }
+
+    private void pauseTracking(View view) {
+        tmrActivityDuration.pause();
+        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
+        fabPause.setImageResource(R.drawable.ic_icon_start);
+    }
+
+    private void startTracking(View view) {
+        tmrActivityDuration.start();
+        Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
+        fabRun.setImageResource(R.drawable.ic_icon_stop);
+        fabPause.setVisibility(View.VISIBLE);
+    }
+
+    private void stopTracking(View view) {
+        tmrActivityDuration.stop();
+        Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
+        fabRun.setImageResource(R.drawable.ic_icon_start);
+        fabPause.setImageResource(R.drawable.ic_icon_pause);
+        txvTimer.setText(R.string.default_timer_value);
+        fabPause.setVisibility(View.INVISIBLE);
+    }
+
+    private void resumeTracking(View view) {
+        tmrActivityDuration.resume();
+        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
+        fabPause.setImageResource(R.drawable.ic_icon_pause);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
+                allLocationListener.requestLocationData();
+                break;
+        }
     }
 }

@@ -23,13 +23,6 @@ public class ApplicationLocationListener implements LocationListener {
 
     private ApplicationLocationListener() {
         locManager = (LocationManager) Properties.mainActivity.getSystemService(Context.LOCATION_SERVICE);
-        //TODO: Button on fron to turn on GPS services
-        try {
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
-        }
-        catch (SecurityException ex) {
-            Toast.makeText(Properties.mainActivity,ex.getMessage(),Toast.LENGTH_LONG).show();
-        }
     }
 
     public static ApplicationLocationListener getInstance() {
@@ -66,5 +59,13 @@ public class ApplicationLocationListener implements LocationListener {
 
     public void addOnLocationChangedCommand(LocationCommand command){
         onLocationChangedListeners.add(command);
+    }
+
+    public void requestLocationData() {
+        try {
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        } catch (SecurityException ex) {
+            Toast.makeText(Properties.mainActivity, ex.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 }
