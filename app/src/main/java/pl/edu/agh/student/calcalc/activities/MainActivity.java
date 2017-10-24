@@ -21,11 +21,13 @@ import android.widget.TextView;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
+import pl.edu.agh.student.calcalc.enums.GPSState;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.reflection.LocationCommand;
+import pl.edu.agh.student.calcalc.reflection.ProviderChangeCommand;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity
     TextView txvTimer;
     TextView txvLatitude;
     TextView txvLongitude;
+    TextView isGPSEnabledLabel;
     Timer tmrActivityDuration;
     FloatingActionButton fabRun;
     AnimatedFloatingActionButton fabPause;
@@ -59,9 +62,11 @@ public class MainActivity extends AppCompatActivity
         txvLongitude = (TextView) findViewById(R.id.txvLongitude);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         allLocationListener = ApplicationLocationListener.getInstance();
+        isGPSEnabledLabel = (TextView) findViewById(R.id.txvGPSEnabled);
 
         setSupportActionBar(toolbar);
         initializeListeners();
+        setDefaults();
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -150,6 +155,7 @@ public class MainActivity extends AppCompatActivity
             }
 
         });
+
         fabPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -163,6 +169,7 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+
         allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
             @Override
             public void execute(Location location) {
@@ -171,12 +178,38 @@ public class MainActivity extends AppCompatActivity
                 txvLongitude.setText(locFormatted.second);
             }
         });
+
+        allLocationListener.addOnProviderChangedCommand(new ProviderChangeCommand() {
+            @Override
+            public void execute(boolean isGPSEnabled) {
+                if (isGPSEnabled) {
+                    setGPSStateLabel(GPSState.GPS_STATE_ENABLED);
+                }
+                else {
+                    setGPSStateLabel(GPSState.GPS_STATE_DISABLED);
+                }
+            }
+        });
+
         navSideMenu.setNavigationItemSelectedListener(this);
         if(ActivityHelper.checkForPermissions(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
-            allLocationListener.requestLocationData();
+            if(allLocationListener.isGPSEnabled()) {
+                allLocationListener.requestLocationData();
+            }
         }
         else {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Properties.PERMISSION_TO_ACCESS_FINE_LOCATION);
+        }
+
+
+    }
+
+    private void setDefaults(){
+        if(allLocationListener.isGPSEnabled()) {
+            setGPSStateLabel(GPSState.GPS_STATE_ENABLED);
+        }
+        else {
+            setGPSStateLabel(GPSState.GPS_STATE_DISABLED);
         }
     }
 
@@ -208,11 +241,26 @@ public class MainActivity extends AppCompatActivity
         fabPause.setImageResource(R.drawable.ic_icon_pause);
     }
 
+    private void setGPSStateLabel(GPSState state) {
+        switch (state){
+            case GPS_STATE_ENABLED:
+                isGPSEnabledLabel.setText(R.string.gps_enabled);
+                isGPSEnabledLabel.setTextColor(getResources().getColor(R.color.colorGreen));
+                break;
+            case GPS_STATE_DISABLED:
+                isGPSEnabledLabel.setText(R.string.gps_disabled);
+                isGPSEnabledLabel.setTextColor(getResources().getColor(R.color.colorRed));
+                break;
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
-                allLocationListener.requestLocationData();
+                if(allLocationListener.isGPSEnabled()) {
+                    allLocationListener.requestLocationData();
+                }
                 break;
         }
     }

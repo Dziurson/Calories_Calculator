@@ -14,12 +14,14 @@ import java.util.ArrayList;
 
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.reflection.LocationCommand;
+import pl.edu.agh.student.calcalc.reflection.ProviderChangeCommand;
 
 public class ApplicationLocationListener implements LocationListener {
 
-    ArrayList<LocationCommand> onLocationChangedListeners = new ArrayList<>();
-    LocationManager locManager;
-    static ApplicationLocationListener instance = null;
+    private ArrayList<LocationCommand> onLocationChangedListeners = new ArrayList<>();
+    private ArrayList<ProviderChangeCommand> onGPSProviderChangedListeners = new ArrayList<>();
+    private LocationManager locManager;
+    private static ApplicationLocationListener instance = null;
 
     private ApplicationLocationListener() {
         locManager = (LocationManager) Properties.mainActivity.getSystemService(Context.LOCATION_SERVICE);
@@ -43,22 +45,44 @@ public class ApplicationLocationListener implements LocationListener {
 
     @Override
     public void onProviderEnabled(String provider) {
-
+        switch(provider){
+            case LocationManager.GPS_PROVIDER:
+                executeOnProviderChangedEvents(locManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+                break;
+        }
     }
 
     @Override
     public void onProviderDisabled(String provider) {
-
+        switch(provider){
+            case LocationManager.GPS_PROVIDER:
+                executeOnProviderChangedEvents(locManager.isProviderEnabled(LocationManager.GPS_PROVIDER));
+                break;
+        }
     }
 
     private void executeLocationEvents(Location location) {
-        for(LocationCommand command : onLocationChangedListeners){
-            command.execute(location);
+        if (onLocationChangedListeners.size() != 0) {
+            for (LocationCommand command : onLocationChangedListeners) {
+                command.execute(location);
+            }
         }
     }
 
     public void addOnLocationChangedCommand(LocationCommand command){
         onLocationChangedListeners.add(command);
+    }
+
+    public void addOnProviderChangedCommand(ProviderChangeCommand command) {
+        onGPSProviderChangedListeners.add(command);
+    }
+
+    private void executeOnProviderChangedEvents(boolean isProviderEnabled) {
+        if (onGPSProviderChangedListeners.size() != 0) {
+            for (ProviderChangeCommand command : onGPSProviderChangedListeners) {
+                command.execute(isProviderEnabled);
+            }
+        }
     }
 
     public void requestLocationData() {
@@ -67,5 +91,9 @@ public class ApplicationLocationListener implements LocationListener {
         } catch (SecurityException ex) {
             Toast.makeText(Properties.mainActivity, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    public boolean isGPSEnabled() {
+        return locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
     }
 }

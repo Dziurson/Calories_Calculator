@@ -5,6 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="timer_label">Time</string>
     <string name="latitude_label">Latitude</string>
+    <string name="gps_enabled">GPS Enabled</string>
+    <string name="gps_disabled">GPS Disabled</string>
     <string name="longitude_label">Longitude</string>
     <string name="default_coordinates">00° 00\' 00\"</string>
     <string name="default_timer_value">00:00:00.000</string>
