@@ -18,11 +18,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.util.Locale;
+
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
 import pl.edu.agh.student.calcalc.enums.GPSState;
 import pl.edu.agh.student.calcalc.globals.Properties;
+import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
@@ -36,7 +39,9 @@ public class MainActivity extends AppCompatActivity
     TextView txvTimer;
     TextView txvLatitude;
     TextView txvLongitude;
+    TextView txvAltitude;
     TextView isGPSEnabledLabel;
+    TextView txvVelocity;
     Timer tmrActivityDuration;
     FloatingActionButton fabRun;
     AnimatedFloatingActionButton fabPause;
@@ -63,6 +68,8 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         allLocationListener = ApplicationLocationListener.getInstance();
         isGPSEnabledLabel = (TextView) findViewById(R.id.txvGPSEnabled);
+        txvAltitude = (TextView) findViewById(R.id.txvAltitude);
+        txvVelocity = (TextView) findViewById(R.id.txvVelocity);
 
         setSupportActionBar(toolbar);
         initializeListeners();
@@ -176,6 +183,8 @@ public class MainActivity extends AppCompatActivity
                 Tuple<String,String> locFormatted = LocationHelper.format(location);
                 txvLatitude.setText(locFormatted.first);
                 txvLongitude.setText(locFormatted.second);
+                txvAltitude.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getAltitude(),getString(R.string.m_a_s_l)));
+                txvVelocity.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),getString(UserSettings.usedVelocity.getStringResourceId())));
             }
         });
 

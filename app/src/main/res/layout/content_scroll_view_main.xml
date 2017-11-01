@@ -50,12 +50,12 @@
 
     <TextView
         android:id="@+id/longitudeLabel"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="20sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/longitude_label" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/longitude_label"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/txvLongitude"
@@ -64,5 +64,39 @@
         android:layout_height="wrap_content"
         android:textSize="32sp"
         android:text="@string/default_coordinates" />
+
+    <TextView
+        android:id="@+id/altitudeLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/altitude_label"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txvAltitude"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="@string/default_altitude" />
+
+    <TextView
+        android:id="@+id/velocityLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/velocity_label"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txvVelocity"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="@string/default_velocity" />
 
 </LinearLayout>
