@@ -22,6 +22,7 @@ import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
 import pl.edu.agh.student.calcalc.enums.GPSState;
+import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
@@ -35,20 +36,20 @@ import pl.edu.agh.student.calcalc.utilities.Timer;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    TextView txvTimer;
-    TextView txvLatitude;
-    TextView txvLongitude;
-    TextView txvAltitude;
-    TextView isGPSEnabledLabel;
-    TextView txvVelocity;
-    Timer tmrActivityDuration;
-    FloatingActionButton fabRun;
-    AnimatedFloatingActionButton fabPause;
-    NavigationView navSideMenu;
-    ApplicationLocationListener allLocationListener;
-    Toolbar toolbar;
-    DrawerLayout drawer;
-    GpxFileSerializer gpxSerializer;
+    private TextView txvTimer;
+    private TextView txvLatitude;
+    private TextView txvLongitude;
+    private TextView txvAltitude;
+    private TextView isGPSEnabledLabel;
+    private TextView txvVelocity;
+    private Timer tmrActivityDuration;
+    private FloatingActionButton fabRun;
+    private AnimatedFloatingActionButton fabPause;
+    private NavigationView navSideMenu;
+    private ApplicationLocationListener allLocationListener;
+    private Toolbar toolbar;
+    private DrawerLayout drawer;
+    private GpxFileSerializer gpxSerializer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -188,6 +189,17 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
+            @Override
+            public void execute(Location location) {
+                if(gpxSerializer != null) {
+                    if(gpxSerializer.isStarted()) {
+                        gpxSerializer.addNewPoint(location);
+                    }
+                }
+            }
+        });
+
         allLocationListener.addOnProviderChangedCommand(new ProviderChangeCommand() {
             @Override
             public void execute(boolean isGPSEnabled) {
@@ -230,7 +242,7 @@ public class MainActivity extends AppCompatActivity
 
     private void startTracking(View view) {
         gpxSerializer = new GpxFileSerializer();
-        if (gpxSerializer.start("b")) {
+        if (gpxSerializer.start("b", OutputFileFormat.GPX)) {
             tmrActivityDuration.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
             fabRun.setImageResource(R.drawable.ic_icon_stop);
