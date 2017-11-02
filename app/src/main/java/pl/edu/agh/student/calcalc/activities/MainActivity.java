@@ -17,9 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
 import java.util.Locale;
-
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
@@ -31,6 +29,7 @@ import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.reflection.LocationCommand;
 import pl.edu.agh.student.calcalc.reflection.ProviderChangeCommand;
+import pl.edu.agh.student.calcalc.utilities.GpxFileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
@@ -49,6 +48,7 @@ public class MainActivity extends AppCompatActivity
     ApplicationLocationListener allLocationListener;
     Toolbar toolbar;
     DrawerLayout drawer;
+    GpxFileSerializer gpxSerializer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -229,11 +229,14 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking(View view) {
-        tmrActivityDuration.start();
-        Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
-        fabRun.setImageResource(R.drawable.ic_icon_stop);
-        fabPause.setVisibility(View.VISIBLE);
-    }
+        gpxSerializer = new GpxFileSerializer();
+        if (gpxSerializer.start("b")) {
+            tmrActivityDuration.start();
+            Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
+            fabRun.setImageResource(R.drawable.ic_icon_stop);
+            fabPause.setVisibility(View.VISIBLE);
+        }
+}
 
     private void stopTracking(View view) {
         tmrActivityDuration.stop();
@@ -242,6 +245,7 @@ public class MainActivity extends AppCompatActivity
         fabPause.setImageResource(R.drawable.ic_icon_pause);
         txvTimer.setText(R.string.default_timer_value);
         fabPause.setVisibility(View.INVISIBLE);
+        gpxSerializer.stop();
     }
 
     private void resumeTracking(View view) {
