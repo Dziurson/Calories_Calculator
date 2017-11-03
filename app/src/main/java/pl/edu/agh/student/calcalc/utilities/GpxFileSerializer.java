@@ -24,6 +24,7 @@ public class GpxFileSerializer {
     private boolean isGpxFileOpened = false;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private OutputFileFormat currentExtension;
 
     public  GpxFileSerializer() {
         serializer = Xml.newSerializer();
@@ -37,10 +38,9 @@ public class GpxFileSerializer {
     public boolean start(String filename, OutputFileFormat extension) {
         try {
             fileOutputStream = new FileOutputStream(StringHelper.concat(gpxFileDir.toString(),"/",filename,extension.getExtensionWithDot()),true);
+            currentExtension = extension;
             serializer.setOutput(fileOutputStream, "UTF-8");
-            serializer.startDocument(null, true);
-            serializer.startTag(null,"gpx").attribute(null,"version","1.0"); //TODO: Add another header for different filetypes
-            serializer.startTag(null,"trk");
+            startDocument();
             isGpxFileOpened = true;
             return true;
         }
@@ -51,9 +51,7 @@ public class GpxFileSerializer {
 
     public boolean stop() {
         try {
-            serializer.endTag(null,"trk");
-            serializer.endTag(null,"gpx");
-            serializer.endDocument();
+            endDocument();
             serializer.flush();
             fileOutputStream.close();
             isGpxFileOpened = false;
@@ -71,6 +69,34 @@ public class GpxFileSerializer {
     public void addNewPoint(Location location) {
         try {
             if(isGpxFileOpened) {
+                appendNewPoint(location);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void startDocument() throws IOException{
+        switch(currentExtension) {
+            case GPX:
+                serializer.startDocument(null, true);
+                serializer.startTag(null,"gpx").attribute(null,"version","1.0");
+                serializer.startTag(null,"trk");
+                break;
+            case KML:
+                serializer.startDocument(null,null);
+                serializer.startTag(null,"kml").attribute(null,"xmlns","http://www.opengis.net/kml/2.2");
+                serializer.startTag(null,"Placemark");
+                serializer.startTag(null,"LineString");
+                serializer.startTag(null,"coordinates");
+                break;
+        }
+    }
+
+    private void appendNewPoint(Location location) throws IOException{
+        switch (currentExtension) {
+            case GPX:
                 serializer.startTag(null, "trkpt").attribute(null, "lat", ((Double) location.getLatitude()).toString()).attribute(null, "lon", ((Double) location.getLongitude()).toString());
                 serializer.startTag(null, "ele");
                 serializer.text(((Double) location.getAltitude()).toString());
@@ -79,9 +105,28 @@ public class GpxFileSerializer {
                 serializer.text(dateFormat.format(new Date(location.getTime())));
                 serializer.endTag(null, "time");
                 serializer.endTag(null, "trkpt");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                break;
+            case KML:
+                //TODO:Change to placemarks in future
+                serializer.text(StringHelper.concat(((Double) location.getLatitude()).toString(),",",((Double) location.getLongitude()).toString(),",",((Double) location.getAltitude()).toString(),"\r\n"));
+                break;
+        }
+    }
+
+    private void endDocument() throws IOException {
+        switch (currentExtension) {
+            case GPX:
+                serializer.endTag(null,"trk");
+                serializer.endTag(null,"gpx");
+                serializer.endDocument();
+                break;
+            case KML:
+                serializer.endTag(null,"coordinates");
+                serializer.endTag(null,"LineString");
+                serializer.endTag(null,"Placemark");
+                serializer.endTag(null,"kml");
+                serializer.endDocument();
+                break;
         }
     }
 }
