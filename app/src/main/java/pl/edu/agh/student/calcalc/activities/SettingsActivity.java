@@ -8,16 +8,28 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.adapters.CustomExpandableListAdapter;
+import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navSideMenu;
+    CustomExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+    List<String> headers;
+    HashMap<String, List<ExpandableListChildType>> children;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +46,8 @@ public class SettingsActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
+
+        PrepareExtendableList();
     }
 
     @Override
@@ -97,5 +111,20 @@ public class SettingsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void PrepareExtendableList() {
+        expListView = (ExpandableListView) findViewById(R.id.settingsExpandableList);
+
+        headers = new ArrayList<>();
+        children = new HashMap<>();
+
+        ArrayList<ExpandableListChildType> exportfiletype = new ArrayList<>();
+        exportfiletype.add(ExpandableListChildType.FILE_TYPE);
+
+        headers.add("Export File Type");
+        children.put(headers.get(0),exportfiletype);
+        listAdapter = new CustomExpandableListAdapter(this,headers, children);
+        expListView.setAdapter(listAdapter);
     }
 }

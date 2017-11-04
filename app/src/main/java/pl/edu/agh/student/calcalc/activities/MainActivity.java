@@ -26,6 +26,7 @@ import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.helpers.FileHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.reflection.LocationCommand;
@@ -242,7 +243,7 @@ public class MainActivity extends AppCompatActivity
 
     private void startTracking(View view) {
         gpxSerializer = new GpxFileSerializer();
-        if (gpxSerializer.start("b", OutputFileFormat.GPX)) {
+        if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
             tmrActivityDuration.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
             fabRun.setImageResource(R.drawable.ic_icon_stop);
