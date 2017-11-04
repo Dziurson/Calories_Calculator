@@ -22,15 +22,14 @@ import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
 import pl.edu.agh.student.calcalc.enums.GPSState;
-import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.helpers.FileHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
-import pl.edu.agh.student.calcalc.reflection.LocationCommand;
-import pl.edu.agh.student.calcalc.reflection.ProviderChangeCommand;
+import pl.edu.agh.student.calcalc.commands.LocationCommand;
+import pl.edu.agh.student.calcalc.commands.ProviderChangeCommand;
 import pl.edu.agh.student.calcalc.utilities.GpxFileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 

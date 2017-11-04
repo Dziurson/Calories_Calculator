@@ -8,7 +8,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.adapters.CustomExpandableListAdapter;
+import pl.edu.agh.student.calcalc.adapters.SettingsExpandableListAdapter;
 import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 
@@ -26,7 +25,7 @@ public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navSideMenu;
-    CustomExpandableListAdapter listAdapter;
+    SettingsExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     List<String> headers;
     HashMap<String, List<ExpandableListChildType>> children;
@@ -124,7 +123,7 @@ public class SettingsActivity extends AppCompatActivity
 
         headers.add("Export File Type");
         children.put(headers.get(0),exportfiletype);
-        listAdapter = new CustomExpandableListAdapter(this,headers, children);
+        listAdapter = new SettingsExpandableListAdapter(this,headers, children);
         expListView.setAdapter(listAdapter);
     }
 }

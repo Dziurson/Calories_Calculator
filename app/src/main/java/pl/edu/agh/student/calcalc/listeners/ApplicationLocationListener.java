@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 import pl.edu.agh.student.calcalc.enums.VelocityType;
 import pl.edu.agh.student.calcalc.globals.Properties;
-import pl.edu.agh.student.calcalc.reflection.LocationCommand;
-import pl.edu.agh.student.calcalc.reflection.ProviderChangeCommand;
+import pl.edu.agh.student.calcalc.commands.LocationCommand;
+import pl.edu.agh.student.calcalc.commands.ProviderChangeCommand;
 
 public class ApplicationLocationListener implements LocationListener {
 
