@@ -7,7 +7,6 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,51 +18,10 @@ import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
 import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 
-public class SettingsExpandableListAdapter extends BaseExpandableListAdapter {
-
-    private Activity context;
-    private List<String> listHeaders;
-    private HashMap<String,List<ExpandableListChildType>> childrenMap;
+public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
     public SettingsExpandableListAdapter(Activity context, List<String> listHeaders, HashMap<String,List<ExpandableListChildType>> childrenMap) {
-        this.context = context;
-        this.listHeaders = listHeaders;
-        this.childrenMap = childrenMap;
-    }
-
-    @Override
-    public int getGroupCount() {
-        return listHeaders.size();
-    }
-
-    @Override
-    public int getChildrenCount(int groupPosition) {
-        return childrenMap.get(listHeaders.get(groupPosition)).size();
-    }
-
-    @Override
-    public Object getGroup(int groupPosition) {
-        return listHeaders.get(groupPosition);
-    }
-
-    @Override
-    public Object getChild(int groupPosition, int childPosition) {
-        return childrenMap.get(listHeaders.get(groupPosition)).get(childPosition);
-    }
-
-    @Override
-    public long getGroupId(int groupPosition) {
-        return groupPosition;
-    }
-
-    @Override
-    public long getChildId(int groupPosition, int childPosition) {
-        return childPosition;
-    }
-
-    @Override
-    public boolean hasStableIds() {
-        return false;
+        super(context,listHeaders,childrenMap);
     }
 
     @Override
@@ -103,11 +61,6 @@ public class SettingsExpandableListAdapter extends BaseExpandableListAdapter {
                 break;
         }
         return convertView;
-    }
-
-    @Override
-    public boolean isChildSelectable(int groupPosition, int childPosition) {
-        return false;
     }
 
     private void fileTypeSelectorInitialize(View child, View parent) {
