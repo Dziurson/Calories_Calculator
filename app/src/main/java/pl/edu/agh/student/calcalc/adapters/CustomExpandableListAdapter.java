@@ -8,38 +8,38 @@ import android.widget.BaseExpandableListAdapter;
 import java.util.HashMap;
 import java.util.List;
 
+import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 
 public abstract class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     protected Activity context;
-    protected List<String> listHeaders;
-    protected HashMap<String,List<ExpandableListChildType>> childrenMap;
+    private List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap;
 
-    public CustomExpandableListAdapter(Activity context, List<String> listHeaders, HashMap<String,List<ExpandableListChildType>> childrenMap) {
+    public CustomExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
         this.childrenMap = childrenMap;
         this.context = context;
-        this.listHeaders = listHeaders;
     }
 
     @Override
     public int getGroupCount() {
-        return listHeaders.size();
+        return childrenMap.size();
     }
 
     @Override
     public int getChildrenCount(int groupPosition) {
-        return childrenMap.get(listHeaders.get(groupPosition)).size();
+        return childrenMap.get(groupPosition).second.size();
     }
 
     @Override
     public Object getGroup(int groupPosition) {
-        return listHeaders.get(groupPosition);
+        return childrenMap.get(groupPosition).first;
     }
 
     @Override
     public Object getChild(int groupPosition, int childPosition) {
-        return childrenMap.get(listHeaders.get(groupPosition)).get(childPosition);
+        return childrenMap.get(groupPosition).second.get(childPosition);
     }
 
     @Override

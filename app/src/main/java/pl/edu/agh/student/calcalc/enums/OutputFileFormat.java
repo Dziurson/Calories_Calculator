@@ -1,16 +1,21 @@
 package pl.edu.agh.student.calcalc.enums;
 
-public enum OutputFileFormat {
-    KML("kml"),
-    GPX("gpx");
+import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.interfaces.IResourced;
 
-    private final String fileExtension;
+public enum OutputFileFormat implements IResourced {
+    KML(R.string.kml_filetype),
+    GPX(R.string.gpx_filetype);
 
-    OutputFileFormat(String fileExtension_) {
-        fileExtension = fileExtension_;
+    private final int stringResourceId;
+
+    OutputFileFormat(int stringResourceId_) {
+        stringResourceId = stringResourceId_;
     }
 
-    public String getExtensionWithDot() {
-        return "." + fileExtension;
+    @Override
+    public int getResourceId() {
+        return stringResourceId;
     }
+
 }

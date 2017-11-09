@@ -8,16 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 
 public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter {
 
-    public PropertiesExpandableListAdapter(Activity context, List<String> listHeaders, HashMap<String,List<ExpandableListChildType>> childrenMap) {
-        super(context,listHeaders,childrenMap);
+    public PropertiesExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
+        super(context,childrenMap);
     }
 
     @Override
@@ -27,9 +28,9 @@ public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter
 
         if(convertView == null) {
             LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutFactory.inflate(R.layout.expandable_list_group,null);
+            convertView = layoutFactory.inflate(R.layout.expandable_list_group_file,null);
         }
-        TextView listGroupHeader = (TextView) convertView.findViewById(R.id.expandableListHeader);
+        TextView listGroupHeader = (TextView) convertView.findViewById(R.id.group_file_header);
         listGroupHeader.setTypeface(null, Typeface.BOLD);
         listGroupHeader.setText(header);
 

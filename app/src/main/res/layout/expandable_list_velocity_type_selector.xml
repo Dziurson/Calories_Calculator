@@ -3,17 +3,17 @@
     android:layout_width="match_parent"
     android:layout_height="36dp"
     android:orientation="horizontal">
-    <pl.edu.agh.student.calcalc.controls.CustomButton
-        android:id="@+id/gpxFileTypeButton"
+    <Button
+        android:id="@+id/msVelocityTypeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/gpx_filetype" />
+        android:text="@string/meters_per_second" />
 
-    <pl.edu.agh.student.calcalc.controls.CustomButton
-        android:id="@+id/kmlFileTypeButton"
+    <Button
+        android:id="@+id/kmhVelocityTypeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/kml_filetype" />
+        android:text="@string/kilometers_per_hour" />
 </LinearLayout>

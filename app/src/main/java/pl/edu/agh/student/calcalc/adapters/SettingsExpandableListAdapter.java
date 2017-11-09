@@ -10,39 +10,37 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
+import pl.edu.agh.student.calcalc.enums.VelocityType;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
+import pl.edu.agh.student.calcalc.interfaces.IResourced;
 
 public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
-    public SettingsExpandableListAdapter(Activity context, List<String> listHeaders, HashMap<String,List<ExpandableListChildType>> childrenMap) {
-        super(context,listHeaders,childrenMap);
+    public SettingsExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
+        super(context,childrenMap);
     }
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 
-        String header = (String) getGroup(groupPosition);
+        ExpandableListGroupType groupHeader = (ExpandableListGroupType) getGroup(groupPosition);
 
-        if(convertView == null) {
-            LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutFactory.inflate(R.layout.expandable_list_group,null);
+        switch (groupHeader) {
+            case EXPORT_FILE_TYPE:
+                convertView = initializeGroup(ExpandableListGroupType.EXPORT_FILE_TYPE,UserSettings.exportFileFormat);
+                break;
+            case VELOCITY_UNITS:
+                convertView = initializeGroup(ExpandableListGroupType.VELOCITY_UNITS,UserSettings.usedVelocity);
+                break;
         }
-
-        if(groupPosition == 0) {
-            final TextView headerValue = (TextView) convertView.findViewById(R.id.expandableListValue);
-            headerValue.setText(UserSettings.exportFileFormat.getExtensionWithDot());
-        }
-
-        TextView listGroupHeader = (TextView) convertView.findViewById(R.id.expandableListHeader);
-        listGroupHeader.setTypeface(null, Typeface.BOLD);
-        listGroupHeader.setText(header);
-
         return convertView;
     }
 
@@ -50,50 +48,97 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
         final ExpandableListChildType childType = (ExpandableListChildType) getChild(groupPosition, childPosition);
+        LayoutInflater infalInflater;
 
         switch(childType) {
             case FILE_TYPE:
-                if (convertView == null) {
-                    LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = infalInflater.inflate(R.layout.expandable_list_file_type_selector, null);
-                }
+                infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = infalInflater.inflate(R.layout.expandable_list_file_type_selector, null);
                 fileTypeSelectorInitialize(convertView,parent);
+                break;
+            case VELOCITY_UNITS:
+                infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = infalInflater.inflate(R.layout.expandable_list_velocity_type_selector, null);
+                VelocityUnitSelectorInitialize(convertView,parent);
                 break;
         }
         return convertView;
     }
 
-    private void fileTypeSelectorInitialize(View child, View parent) {
-        final Button gpxButton = (Button) child.findViewById(R.id.gpxFileTypeButton);
-        final Button kmlButton = (Button) child.findViewById(R.id.kmlFileTypeButton);
-        gpxButton.setFocusable(false);
-        kmlButton.setFocusable(false);
-        final TextView headerValue = (TextView) parent.findViewById(R.id.expandableListValue);
-        switch(UserSettings.exportFileFormat) {
-            case KML:
-                kmlButton.setBackgroundResource(R.color.colorLightBlue);
-                kmlButton.setTextColor(Color.WHITE);
-                gpxButton.setBackgroundResource(R.color.colorLightGrey);
-                gpxButton.setTextColor(Color.BLACK);
+    private void VelocityUnitSelectorInitialize(View child, ViewGroup parent) {
+        final Button msButton = (Button) child.findViewById(R.id.msVelocityTypeButton);
+        final Button kphButton = (Button) child.findViewById(R.id.kmhVelocityTypeButton);
+        msButton.setFocusable(false);
+        kphButton.setFocusable(false);
+        final TextView headerValue = (TextView) parent.findViewById(R.id.group_velocity_value);
+        switch(UserSettings.usedVelocity) {
+            case VELOCITY_IN_MPS:
+                msButton.setBackgroundResource(R.color.colorLightBlue);
+                msButton.setTextColor(Color.WHITE);
+                kphButton.setBackgroundResource(R.color.colorLightGrey);
+                kphButton.setTextColor(Color.BLACK);
                 break;
-            case GPX:
-                gpxButton.setBackgroundResource(R.color.colorLightBlue);
-                gpxButton.setTextColor(Color.WHITE);
-                kmlButton.setBackgroundResource(R.color.colorLightGrey);
-                kmlButton.setTextColor(Color.BLACK);
+            case VELOCITY_IN_KPH:
+                kphButton.setBackgroundResource(R.color.colorLightBlue);
+                kphButton.setTextColor(Color.WHITE);
+                msButton.setBackgroundResource(R.color.colorLightGrey);
+                msButton.setTextColor(Color.BLACK);
                 break;
         }
-        headerValue.setText(UserSettings.exportFileFormat.getExtensionWithDot());
+        headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
+        msButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_MPS)) {
+                    msButton.setBackgroundResource(R.color.colorLightBlue);
+                    msButton.setTextColor(Color.WHITE);
+                    kphButton.setBackgroundResource(R.color.colorLightGrey);
+                    kphButton.setTextColor(Color.BLACK);
+                    UserSettings.usedVelocity = VelocityType.VELOCITY_IN_MPS;
+                    headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
+                }
+            }
+        });
+        kphButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_KPH)) {
+                    kphButton.setBackgroundResource(R.color.colorLightBlue);
+                    kphButton.setTextColor(Color.WHITE);
+                    msButton.setBackgroundResource(R.color.colorLightGrey);
+                    msButton.setTextColor(Color.BLACK);
+                    UserSettings.usedVelocity = VelocityType.VELOCITY_IN_KPH;
+                    headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
+                }
+            }
+        });
+    }
+
+    private void fileTypeSelectorInitialize(View child, View parent) {
+        final CustomButton gpxButton = (CustomButton) child.findViewById(R.id.gpxFileTypeButton);
+        final CustomButton kmlButton = (CustomButton) child.findViewById(R.id.kmlFileTypeButton);
+        gpxButton.setFocusable(false);
+        kmlButton.setFocusable(false);
+        final TextView headerValue = (TextView) parent.findViewById(R.id.group_file_value);
+        switch(UserSettings.exportFileFormat) {
+            case KML:
+                kmlButton.setButtonSelected(true);
+                gpxButton.setButtonSelected(false);
+                break;
+            case GPX:
+                gpxButton.setButtonSelected(true);
+                kmlButton.setButtonSelected(false);
+                break;
+        }
+        headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
         gpxButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
-                    gpxButton.setBackgroundResource(R.color.colorLightBlue);
-                    gpxButton.setTextColor(Color.WHITE);
-                    kmlButton.setBackgroundResource(R.color.colorLightGrey);
-                    kmlButton.setTextColor(Color.BLACK);
+                    gpxButton.setButtonSelected(true);
+                    kmlButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerValue.setText(UserSettings.exportFileFormat.getExtensionWithDot());
+                    headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
                 }
             }
         });
@@ -101,14 +146,27 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
-                    kmlButton.setBackgroundResource(R.color.colorLightBlue);
-                    kmlButton.setTextColor(Color.WHITE);
-                    gpxButton.setBackgroundResource(R.color.colorLightGrey);
-                    gpxButton.setTextColor(Color.BLACK);
+                    kmlButton.setButtonSelected(true);
+                    gpxButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerValue.setText(UserSettings.exportFileFormat.getExtensionWithDot());
+                    headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
                 }
             }
         });
+    }
+
+    private View initializeGroup(ExpandableListGroupType groupType, IResourced globalField){
+        LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        View convertView = layoutFactory.inflate(groupType.layoutResourceId,null);
+
+        TextView headerValue = (TextView) convertView.findViewById(groupType.valueResourceId);
+        TextView listGroupHeader = (TextView) convertView.findViewById(groupType.headerResourceId);
+
+        headerValue.setText(context.getString(globalField.getResourceId()));
+        listGroupHeader.setTypeface(null, Typeface.BOLD);
+        listGroupHeader.setText(context.getString(groupType.stringResourceId));
+
+        return convertView;
     }
 }

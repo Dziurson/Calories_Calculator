@@ -18,7 +18,9 @@ import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.adapters.SettingsExpandableListAdapter;
+import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 
 public class SettingsActivity extends AppCompatActivity
@@ -115,15 +117,19 @@ public class SettingsActivity extends AppCompatActivity
     private void PrepareExtendableList() {
         expListView = (ExpandableListView) findViewById(R.id.settingsExpandableList);
 
-        headers = new ArrayList<>();
-        children = new HashMap<>();
+        List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();
 
-        ArrayList<ExpandableListChildType> exportfiletype = new ArrayList<>();
-        exportfiletype.add(ExpandableListChildType.FILE_TYPE);
+        List<ExpandableListChildType> fileTypeChildren = new ArrayList<>();
+        fileTypeChildren.add(ExpandableListChildType.FILE_TYPE);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> fileTypeEntry = new Tuple<>(ExpandableListGroupType.EXPORT_FILE_TYPE, fileTypeChildren);
+        listMap.add(fileTypeEntry);
 
-        headers.add("Export File Type");
-        children.put(headers.get(0),exportfiletype);
-        listAdapter = new SettingsExpandableListAdapter(this,headers, children);
+        List<ExpandableListChildType> velocityTypeChildren = new ArrayList<>();
+        velocityTypeChildren.add(ExpandableListChildType.VELOCITY_UNITS);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> velocityTypeEntry = new Tuple<>(ExpandableListGroupType.VELOCITY_UNITS,velocityTypeChildren);
+        listMap.add(velocityTypeEntry);
+
+        listAdapter = new SettingsExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
     }
 }

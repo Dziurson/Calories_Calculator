@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity
                 txvLatitude.setText(locFormatted.first);
                 txvLongitude.setText(locFormatted.second);
                 txvAltitude.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getAltitude(),getString(R.string.m_a_s_l)));
-                txvVelocity.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),getString(UserSettings.usedVelocity.getStringResourceId())));
+                txvVelocity.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),getString(UserSettings.usedVelocity.getResourceId())));
             }
         });
 
@@ -241,7 +241,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking(View view) {
-        gpxSerializer = new GpxFileSerializer();
+        gpxSerializer = new GpxFileSerializer(this);
         if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
             tmrActivityDuration.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
