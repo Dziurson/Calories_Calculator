@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="36dp"
     android:orientation="horizontal">
-    <Button
+    <pl.edu.agh.student.calcalc.controls.CustomButton
         android:id="@+id/msVelocityTypeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="@string/meters_per_second" />
 
-    <Button
+    <pl.edu.agh.student.calcalc.controls.CustomButton
         android:id="@+id/kmhVelocityTypeButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

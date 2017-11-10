@@ -48,7 +48,7 @@ public class SettingsActivity extends AppCompatActivity
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
 
-        PrepareExtendableList();
+        prepareExpandableList();
     }
 
     @Override
@@ -101,8 +101,6 @@ public class SettingsActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
-        } else if (id == R.id.dmi_settings) {
-
         } else if (id == R.id.dmi_share) {
 
         } else if (id == R.id.dmi_send) {
@@ -114,7 +112,7 @@ public class SettingsActivity extends AppCompatActivity
         return true;
     }
 
-    private void PrepareExtendableList() {
+    private void prepareExpandableList() {
         expListView = (ExpandableListView) findViewById(R.id.settingsExpandableList);
 
         List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();

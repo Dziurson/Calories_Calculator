@@ -2,12 +2,10 @@ package pl.edu.agh.student.calcalc.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
@@ -53,12 +51,12 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         switch(childType) {
             case FILE_TYPE:
                 infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.expandable_list_file_type_selector, null);
+                convertView = infalInflater.inflate(R.layout.expandable_list_child_file_type, null);
                 fileTypeSelectorInitialize(convertView,parent);
                 break;
             case VELOCITY_UNITS:
                 infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.expandable_list_velocity_type_selector, null);
+                convertView = infalInflater.inflate(R.layout.expandable_list_child_velocity_units, null);
                 VelocityUnitSelectorInitialize(convertView,parent);
                 break;
         }
@@ -66,23 +64,19 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
     }
 
     private void VelocityUnitSelectorInitialize(View child, ViewGroup parent) {
-        final Button msButton = (Button) child.findViewById(R.id.msVelocityTypeButton);
-        final Button kphButton = (Button) child.findViewById(R.id.kmhVelocityTypeButton);
+        final CustomButton msButton = (CustomButton) child.findViewById(R.id.msVelocityTypeButton);
+        final CustomButton kphButton = (CustomButton) child.findViewById(R.id.kmhVelocityTypeButton);
         msButton.setFocusable(false);
         kphButton.setFocusable(false);
         final TextView headerValue = (TextView) parent.findViewById(R.id.group_velocity_value);
         switch(UserSettings.usedVelocity) {
             case VELOCITY_IN_MPS:
-                msButton.setBackgroundResource(R.color.colorLightBlue);
-                msButton.setTextColor(Color.WHITE);
-                kphButton.setBackgroundResource(R.color.colorLightGrey);
-                kphButton.setTextColor(Color.BLACK);
+                msButton.setButtonSelected(true);
+                kphButton.setButtonSelected(false);
                 break;
             case VELOCITY_IN_KPH:
-                kphButton.setBackgroundResource(R.color.colorLightBlue);
-                kphButton.setTextColor(Color.WHITE);
-                msButton.setBackgroundResource(R.color.colorLightGrey);
-                msButton.setTextColor(Color.BLACK);
+                kphButton.setButtonSelected(true);
+                msButton.setButtonSelected(false);
                 break;
         }
         headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
@@ -90,10 +84,8 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_MPS)) {
-                    msButton.setBackgroundResource(R.color.colorLightBlue);
-                    msButton.setTextColor(Color.WHITE);
-                    kphButton.setBackgroundResource(R.color.colorLightGrey);
-                    kphButton.setTextColor(Color.BLACK);
+                    msButton.setButtonSelected(true);
+                    kphButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityType.VELOCITY_IN_MPS;
                     headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
                 }
@@ -103,10 +95,8 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_KPH)) {
-                    kphButton.setBackgroundResource(R.color.colorLightBlue);
-                    kphButton.setTextColor(Color.WHITE);
-                    msButton.setBackgroundResource(R.color.colorLightGrey);
-                    msButton.setTextColor(Color.BLACK);
+                    kphButton.setButtonSelected(true);
+                    msButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityType.VELOCITY_IN_KPH;
                     headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
                 }
@@ -133,7 +123,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
         gpxButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
                     gpxButton.setButtonSelected(true);
                     kmlButton.setButtonSelected(false);
@@ -144,7 +134,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         });
         kmlButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
                     kmlButton.setButtonSelected(true);
                     gpxButton.setButtonSelected(false);
