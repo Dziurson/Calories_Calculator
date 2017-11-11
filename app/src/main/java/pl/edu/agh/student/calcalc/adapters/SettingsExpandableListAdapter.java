@@ -45,19 +45,19 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
         switch((ExpandableListChildType) getChild(groupPosition, childPosition)) {
             case FILE_TYPE:
-                convertView = fileTypeChildInit(convertView,parent);
+                convertView = fileTypeChildInit(parent);
                 break;
             case VELOCITY_UNITS:
-                convertView = velocityUnitChildInit(convertView,parent);
+                convertView = velocityUnitChildInit(parent);
                 break;
         }
         return convertView;
     }
 
-    private View velocityUnitChildInit(View child, ViewGroup parent) {
-        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_file, null);
-        final CustomButton metersPerSecondButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_velocity_ms_button);
-        final CustomButton kilometersPerHourButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_velocity_kph_button);
+    private View velocityUnitChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_velocity, null);
+        final CustomButton metersPerSecondButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_velocity_ms_button);
+        final CustomButton kilometersPerHourButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_velocity_kph_button);
         metersPerSecondButton.setFocusable(false);
         kilometersPerHourButton.setFocusable(false);
         final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_velocity_value);
@@ -97,10 +97,10 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         return convertView;
     }
 
-    private View fileTypeChildInit(View child, View parent) {
+    private View fileTypeChildInit(ViewGroup parent) {
         View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_file, null);
-        final CustomButton gpxFileTypeButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_file_gpx);
-        final CustomButton kmlFileTypeButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_file_kml);
+        final CustomButton gpxFileTypeButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_file_gpx);
+        final CustomButton kmlFileTypeButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_file_kml);
         gpxFileTypeButton.setFocusable(false);
         kmlFileTypeButton.setFocusable(false);
         final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_file_value);

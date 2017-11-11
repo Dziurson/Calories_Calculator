@@ -10,6 +10,7 @@
     <string name="longitude_label">Długość geograficzna</string>
     <string name="altitude_label">Wysokość</string>
     <string name="velocity_label">Prędkość</string>
+    <string name="location_label">Lokalizacja</string>
     <string name="m_a_s_l">m n.p.m.</string>
     <string name="meters_per_second">m/s</string>
     <string name="kilometers_per_hour">km/h</string>
@@ -24,4 +25,5 @@
     <string name="title_activity_settings">Ustawienia</string>
     <string name="title_activity_properties">Właściwości</string>
     <string name="title_activity_map">Mapa</string>
+    <string name="output_file_type">Typ Pliku Wyjściowego</string>
 </resources>
