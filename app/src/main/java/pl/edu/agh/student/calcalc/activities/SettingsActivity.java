@@ -10,14 +10,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.adapters.SettingsExpandableListAdapter;
+import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navSideMenu;
+    SettingsExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +45,8 @@ public class SettingsActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
+
+        prepareExpandableList();
     }
 
     @Override
@@ -86,8 +99,6 @@ public class SettingsActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
-        } else if (id == R.id.dmi_settings) {
-
         } else if (id == R.id.dmi_share) {
 
         } else if (id == R.id.dmi_send) {
@@ -97,5 +108,24 @@ public class SettingsActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void prepareExpandableList() {
+        expListView = (ExpandableListView) findViewById(R.id.settings_activity_expandable_list);
+
+        List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();
+
+        List<ExpandableListChildType> fileTypeChildren = new ArrayList<>();
+        fileTypeChildren.add(ExpandableListChildType.FILE_TYPE);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> fileTypeEntry = new Tuple<>(ExpandableListGroupType.EXPORT_FILE_TYPE, fileTypeChildren);
+        listMap.add(fileTypeEntry);
+
+        List<ExpandableListChildType> velocityTypeChildren = new ArrayList<>();
+        velocityTypeChildren.add(ExpandableListChildType.VELOCITY_UNITS);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> velocityTypeEntry = new Tuple<>(ExpandableListGroupType.VELOCITY_UNITS,velocityTypeChildren);
+        listMap.add(velocityTypeEntry);
+
+        listAdapter = new SettingsExpandableListAdapter(this, listMap);
+        expListView.setAdapter(listAdapter);
     }
 }

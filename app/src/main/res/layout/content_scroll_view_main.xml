@@ -4,54 +4,21 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txvTimerLabel"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
+        android:id="@+id/main_activity_gps_state"
+        android:layout_marginTop="2dp"
+        android:layout_marginRight="10dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorRed"
+        android:textAlignment="textEnd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/timer_label" />
 
-    <TextView
-        android:id="@+id/txvTimer"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_timer_value" />
+        android:textSize="10sp"
+        android:text="@string/gps_disabled" />
 
-    <TextView
-        android:id="@+id/latitudeLabel"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="20sp"
+    <ExpandableListView
+        android:id="@+id/main_activity_expandable_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude_label" />
-
-    <TextView
-        android:id="@+id/txvLatitude"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_coordinates" />
-
-    <TextView
-        android:id="@+id/longitudeLabel"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/longitude_label" />
-
-    <TextView
-        android:id="@+id/txvLongitude"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_coordinates" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

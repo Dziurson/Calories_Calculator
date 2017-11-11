@@ -1,0 +1,10 @@
+<resources>
+    <string name="dmi_home_label">Ekran główny</string>
+    <string name="dmi_import_file_label">Importuj…</string>
+    <string name="dmi_map_label">Mapa</string>
+    <string name="dmi_properties_label">Właściwości</string>
+    <string name="dmi_settings_label">Ustawienia</string>
+    <string name="dmi_share_label">Udostępnij…</string>
+    <string name="dmi_send_label">Wyślij…</string>
+    <string name="grp_social_submenu">Media społecznościowe</string>
+</resources>

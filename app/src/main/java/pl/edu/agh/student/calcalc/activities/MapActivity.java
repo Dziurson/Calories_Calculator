@@ -46,7 +46,7 @@ public class MapActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
-        mapGoogleMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.mapGoogleMap);
+        mapGoogleMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_activity_google_map);
         mapGoogleMap.getMapAsync(this);
         msvActivityContentContainer = (ScrollViewTouchEnabled) findViewById(R.id.map_scroll_view);
         msvActivityContentContainer.enableTouchForView(mapGoogleMap.getView());
