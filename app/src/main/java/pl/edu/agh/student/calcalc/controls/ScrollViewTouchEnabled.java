@@ -32,6 +32,7 @@ public class ScrollViewTouchEnabled extends ScrollView {
     public <T extends View> void enableTouchForView(T view) {
         alvTouchEnabledViews.add(view);
     }
+
     public <T extends View> boolean disableTouchForView(T view) {
         if(alvTouchEnabledViews.contains(view)) {
             alvTouchEnabledViews.remove(view);
@@ -39,7 +40,6 @@ public class ScrollViewTouchEnabled extends ScrollView {
         }
         return false;
     }
-
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {

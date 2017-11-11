@@ -16,17 +16,24 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 import android.widget.TextView;
-import java.util.Locale;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.adapters.MainExpandableListAdapter;
 import pl.edu.agh.student.calcalc.containers.Tuple;
 import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
+import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 import pl.edu.agh.student.calcalc.enums.GPSState;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.helpers.FileHelper;
-import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.commands.LocationCommand;
 import pl.edu.agh.student.calcalc.commands.ProviderChangeCommand;
@@ -36,19 +43,12 @@ import pl.edu.agh.student.calcalc.utilities.Timer;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private TextView txvTimer;
-    private TextView txvLatitude;
-    private TextView txvLongitude;
-    private TextView txvAltitude;
-    private TextView isGPSEnabledLabel;
-    private TextView txvVelocity;
-    private Timer tmrActivityDuration;
-    private FloatingActionButton fabRun;
-    private AnimatedFloatingActionButton fabPause;
+    private TextView gpsStateTextView;
+    private Timer durationTimer;
+    private FloatingActionButton startActivityButton;
+    private AnimatedFloatingActionButton pauseActivityButton;
     private NavigationView navSideMenu;
-    private ApplicationLocationListener allLocationListener;
-    private Toolbar toolbar;
-    private DrawerLayout drawer;
+    private ApplicationLocationListener locationListener;
     private GpxFileSerializer gpxSerializer;
 
     @Override
@@ -58,20 +58,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Properties.mainActivity = this;
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        txvTimer = (TextView) findViewById(R.id.txvTimer);
-        tmrActivityDuration = new Timer(txvTimer, this);
-        fabRun = (FloatingActionButton) findViewById(R.id.fabRun);
-        fabPause = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        durationTimer = new Timer(null, this);
+        startActivityButton = (FloatingActionButton) findViewById(R.id.fabRun);
+        pauseActivityButton = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
-        txvLatitude = (TextView) findViewById(R.id.txvLatitude);
-        txvLongitude = (TextView) findViewById(R.id.txvLongitude);
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        allLocationListener = ApplicationLocationListener.getInstance();
-        isGPSEnabledLabel = (TextView) findViewById(R.id.txvGPSEnabled);
-        txvAltitude = (TextView) findViewById(R.id.txvAltitude);
-        txvVelocity = (TextView) findViewById(R.id.txvVelocity);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        locationListener = ApplicationLocationListener.getInstance();
+        gpsStateTextView = (TextView) findViewById(R.id.main_activity_gps_state);
 
+        initializeExpandableList();
         setSupportActionBar(toolbar);
         initializeListeners();
         setDefaults();
@@ -146,10 +142,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeListeners() {
-        fabRun.setOnClickListener(new View.OnClickListener() {
+        startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (tmrActivityDuration.isStarted()){
+                if (durationTimer.isStarted()){
                     stopTracking(view);
                 }
                 else{
@@ -164,11 +160,11 @@ public class MainActivity extends AppCompatActivity
 
         });
 
-        fabPause.setOnClickListener(new View.OnClickListener() {
+        pauseActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(tmrActivityDuration.isStarted()) {
-                    if(tmrActivityDuration.isPaused()) {
+                if(durationTimer.isStarted()) {
+                    if(durationTimer.isPaused()) {
                         resumeTracking(view);
                     }
                     else {
@@ -178,20 +174,9 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
+        locationListener.addOnLocationChangedCommand(new LocationCommand() {
             @Override
-            public void execute(Location location) {
-                Tuple<String,String> locFormatted = LocationHelper.format(location);
-                txvLatitude.setText(locFormatted.first);
-                txvLongitude.setText(locFormatted.second);
-                txvAltitude.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getAltitude(),getString(R.string.m_a_s_l)));
-                txvVelocity.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),getString(UserSettings.usedVelocity.getResourceId())));
-            }
-        });
-
-        allLocationListener.addOnLocationChangedCommand(new LocationCommand() {
-            @Override
-            public void execute(Location location) {
+            public void onLocationChanged(Location location) {
                 if(gpxSerializer != null) {
                     if(gpxSerializer.isStarted()) {
                         gpxSerializer.addNewPoint(location);
@@ -200,7 +185,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        allLocationListener.addOnProviderChangedCommand(new ProviderChangeCommand() {
+        locationListener.addOnProviderChangedCommand(new ProviderChangeCommand() {
             @Override
             public void execute(boolean isGPSEnabled) {
                 if (isGPSEnabled) {
@@ -214,8 +199,8 @@ public class MainActivity extends AppCompatActivity
 
         navSideMenu.setNavigationItemSelectedListener(this);
         if(ActivityHelper.checkForPermissions(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
-            if(allLocationListener.isGPSEnabled()) {
-                allLocationListener.requestLocationData();
+            if(locationListener.isGPSEnabled()) {
+                locationListener.requestLocationData();
             }
         }
         else {
@@ -226,7 +211,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setDefaults(){
-        if(allLocationListener.isGPSEnabled()) {
+        if(locationListener.isGPSEnabled()) {
             setGPSStateLabel(GPSState.GPS_STATE_ENABLED);
         }
         else {
@@ -235,46 +220,45 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void pauseTracking(View view) {
-        tmrActivityDuration.pause();
+        durationTimer.pause();
         Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
-        fabPause.setImageResource(R.drawable.ic_icon_start);
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_start);
     }
 
     private void startTracking(View view) {
         gpxSerializer = new GpxFileSerializer(this);
         if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
-            tmrActivityDuration.start();
+            durationTimer.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
-            fabRun.setImageResource(R.drawable.ic_icon_stop);
-            fabPause.setVisibility(View.VISIBLE);
+            startActivityButton.setImageResource(R.drawable.ic_icon_stop);
+            pauseActivityButton.setVisibility(View.VISIBLE);
         }
 }
 
     private void stopTracking(View view) {
-        tmrActivityDuration.stop();
+        durationTimer.stop();
         Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
-        fabRun.setImageResource(R.drawable.ic_icon_start);
-        fabPause.setImageResource(R.drawable.ic_icon_pause);
-        txvTimer.setText(R.string.default_timer_value);
-        fabPause.setVisibility(View.INVISIBLE);
+        startActivityButton.setImageResource(R.drawable.ic_icon_start);
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
+        pauseActivityButton.setVisibility(View.INVISIBLE);
         gpxSerializer.stop();
     }
 
     private void resumeTracking(View view) {
-        tmrActivityDuration.resume();
+        durationTimer.resume();
         Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
-        fabPause.setImageResource(R.drawable.ic_icon_pause);
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
     }
 
     private void setGPSStateLabel(GPSState state) {
         switch (state){
             case GPS_STATE_ENABLED:
-                isGPSEnabledLabel.setText(R.string.gps_enabled);
-                isGPSEnabledLabel.setTextColor(getResources().getColor(R.color.colorGreen));
+                gpsStateTextView.setText(R.string.gps_enabled);
+                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorGreen));
                 break;
             case GPS_STATE_DISABLED:
-                isGPSEnabledLabel.setText(R.string.gps_disabled);
-                isGPSEnabledLabel.setTextColor(getResources().getColor(R.color.colorRed));
+                gpsStateTextView.setText(R.string.gps_disabled);
+                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorRed));
                 break;
         }
     }
@@ -283,10 +267,43 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
-                if(allLocationListener.isGPSEnabled()) {
-                    allLocationListener.requestLocationData();
+                if(locationListener.isGPSEnabled()) {
+                    locationListener.requestLocationData();
                 }
                 break;
         }
+    }
+
+    private void initializeExpandableList() {
+        ExpandableListView mainExpandableListView = (ExpandableListView) findViewById(R.id.main_activity_expandable_list);
+
+        List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();
+
+        List<ExpandableListChildType> fileTypeChildren = new ArrayList<>();
+        fileTypeChildren.add(ExpandableListChildType.TIME);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> fileTypeEntry = new Tuple<>(ExpandableListGroupType.TIME, fileTypeChildren);
+        listMap.add(fileTypeEntry);
+
+        List<ExpandableListChildType> locationChildren = new ArrayList<>();
+        locationChildren.add(ExpandableListChildType.LOCATION);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> locationEntry = new Tuple<>(ExpandableListGroupType.LOCATION, locationChildren);
+        listMap.add(locationEntry);
+
+        List<ExpandableListChildType> altitudeChildren = new ArrayList<>();
+        altitudeChildren.add(ExpandableListChildType.ALTITUDE);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> altitudeEntry = new Tuple<>(ExpandableListGroupType.ALTITUDE, altitudeChildren);
+        listMap.add(altitudeEntry);
+
+        List<ExpandableListChildType> velocityChildren = new ArrayList<>();
+        velocityChildren.add(ExpandableListChildType.VELOCITY);
+        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> velocityEntry = new Tuple<>(ExpandableListGroupType.VELOCITY, velocityChildren);
+        listMap.add(velocityEntry);
+
+        HashMap<String,Object> extras = new HashMap<>();
+        extras.put("timer", durationTimer);
+
+        MainExpandableListAdapter mainExpandableListAdapter = new MainExpandableListAdapter(this, listMap, extras);
+
+        mainExpandableListView.setAdapter(mainExpandableListAdapter);
     }
 }

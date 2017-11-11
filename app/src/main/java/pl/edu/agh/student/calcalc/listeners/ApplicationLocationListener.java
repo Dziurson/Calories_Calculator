@@ -69,7 +69,7 @@ public class ApplicationLocationListener implements LocationListener {
     private void executeLocationEvents(Location location) {
         if (onLocationChangedListeners.size() != 0) {
             for (LocationCommand command : onLocationChangedListeners) {
-                command.execute(location);
+                command.onLocationChanged(location);
             }
         }
     }

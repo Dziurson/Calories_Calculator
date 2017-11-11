@@ -4,7 +4,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txvGPSEnabled"
+        android:id="@+id/main_activity_gps_state"
         android:layout_marginTop="2dp"
         android:layout_marginRight="10dp"
         android:textStyle="bold"
@@ -15,88 +15,10 @@
 
         android:textSize="10sp"
         android:text="@string/gps_disabled" />
-    <TextView
-        android:id="@+id/txvTimerLabel"
-        android:layout_marginLeft="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:text="@string/timer_label" />
 
-    <TextView
-        android:id="@+id/txvTimer"
-        android:layout_marginLeft="20dp"
+    <ExpandableListView
+        android:id="@+id/main_activity_expandable_list"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_timer_value" />
-
-    <TextView
-        android:id="@+id/latitudeLabel"
-        android:layout_marginTop="10dp"
-        android:layout_marginLeft="10dp"
-        android:textSize="20sp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/latitude_label" />
-
-    <TextView
-        android:id="@+id/txvLatitude"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_coordinates" />
-
-    <TextView
-        android:id="@+id/longitudeLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/longitude_label"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/txvLongitude"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_coordinates" />
-
-    <TextView
-        android:id="@+id/altitudeLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/altitude_label"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/txvAltitude"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_altitude" />
-
-    <TextView
-        android:id="@+id/velocityLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/velocity_label"
-        android:textSize="20sp" />
-
-    <TextView
-        android:id="@+id/txvVelocity"
-        android:layout_marginLeft="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="32sp"
-        android:text="@string/default_velocity" />
+        android:layout_height="match_parent" />
 
 </LinearLayout>

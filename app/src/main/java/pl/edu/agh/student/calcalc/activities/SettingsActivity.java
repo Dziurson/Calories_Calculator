@@ -29,8 +29,6 @@ public class SettingsActivity extends AppCompatActivity
     NavigationView navSideMenu;
     SettingsExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    List<String> headers;
-    HashMap<String, List<ExpandableListChildType>> children;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +111,7 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     private void prepareExpandableList() {
-        expListView = (ExpandableListView) findViewById(R.id.settingsExpandableList);
+        expListView = (ExpandableListView) findViewById(R.id.settings_activity_expandable_list);
 
         List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();
 

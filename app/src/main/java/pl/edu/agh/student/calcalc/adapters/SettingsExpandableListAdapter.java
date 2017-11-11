@@ -18,25 +18,24 @@ import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
 import pl.edu.agh.student.calcalc.enums.VelocityType;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
-import pl.edu.agh.student.calcalc.interfaces.IResourced;
+import pl.edu.agh.student.calcalc.interfaces.IProperty;
 
 public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
-    public SettingsExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
-        super(context,childrenMap);
+    LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+    public SettingsExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
+        super(context,initializationList);
     }
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-
-        ExpandableListGroupType groupHeader = (ExpandableListGroupType) getGroup(groupPosition);
-
-        switch (groupHeader) {
+        switch ((ExpandableListGroupType) getGroup(groupPosition)) {
             case EXPORT_FILE_TYPE:
-                convertView = initializeGroup(ExpandableListGroupType.EXPORT_FILE_TYPE,UserSettings.exportFileFormat);
+                convertView = groupInit(ExpandableListGroupType.EXPORT_FILE_TYPE,UserSettings.exportFileFormat);
                 break;
             case VELOCITY_UNITS:
-                convertView = initializeGroup(ExpandableListGroupType.VELOCITY_UNITS,UserSettings.usedVelocity);
+                convertView = groupInit(ExpandableListGroupType.VELOCITY_UNITS,UserSettings.usedVelocity);
                 break;
         }
         return convertView;
@@ -44,119 +43,112 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-
-        final ExpandableListChildType childType = (ExpandableListChildType) getChild(groupPosition, childPosition);
-        LayoutInflater infalInflater;
-
-        switch(childType) {
+        switch((ExpandableListChildType) getChild(groupPosition, childPosition)) {
             case FILE_TYPE:
-                infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.expandable_list_child_file_type, null);
-                fileTypeSelectorInitialize(convertView,parent);
+                convertView = fileTypeChildInit(convertView,parent);
                 break;
             case VELOCITY_UNITS:
-                infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                convertView = infalInflater.inflate(R.layout.expandable_list_child_velocity_units, null);
-                VelocityUnitSelectorInitialize(convertView,parent);
+                convertView = velocityUnitChildInit(convertView,parent);
                 break;
         }
         return convertView;
     }
 
-    private void VelocityUnitSelectorInitialize(View child, ViewGroup parent) {
-        final CustomButton msButton = (CustomButton) child.findViewById(R.id.msVelocityTypeButton);
-        final CustomButton kphButton = (CustomButton) child.findViewById(R.id.kmhVelocityTypeButton);
-        msButton.setFocusable(false);
-        kphButton.setFocusable(false);
-        final TextView headerValue = (TextView) parent.findViewById(R.id.group_velocity_value);
+    private View velocityUnitChildInit(View child, ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_file, null);
+        final CustomButton metersPerSecondButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_velocity_ms_button);
+        final CustomButton kilometersPerHourButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_velocity_kph_button);
+        metersPerSecondButton.setFocusable(false);
+        kilometersPerHourButton.setFocusable(false);
+        final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_velocity_value);
         switch(UserSettings.usedVelocity) {
             case VELOCITY_IN_MPS:
-                msButton.setButtonSelected(true);
-                kphButton.setButtonSelected(false);
+                metersPerSecondButton.setButtonSelected(true);
+                kilometersPerHourButton.setButtonSelected(false);
                 break;
             case VELOCITY_IN_KPH:
-                kphButton.setButtonSelected(true);
-                msButton.setButtonSelected(false);
+                kilometersPerHourButton.setButtonSelected(true);
+                metersPerSecondButton.setButtonSelected(false);
                 break;
         }
-        headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
-        msButton.setOnClickListener(new View.OnClickListener() {
+        headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+        metersPerSecondButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_MPS)) {
-                    msButton.setButtonSelected(true);
-                    kphButton.setButtonSelected(false);
+                    metersPerSecondButton.setButtonSelected(true);
+                    kilometersPerHourButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityType.VELOCITY_IN_MPS;
-                    headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
+                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
                 }
             }
         });
-        kphButton.setOnClickListener(new View.OnClickListener() {
+        kilometersPerHourButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_KPH)) {
-                    kphButton.setButtonSelected(true);
-                    msButton.setButtonSelected(false);
+                    kilometersPerHourButton.setButtonSelected(true);
+                    metersPerSecondButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityType.VELOCITY_IN_KPH;
-                    headerValue.setText(context.getString(UserSettings.usedVelocity.getResourceId()));
+                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
                 }
             }
         });
+        return convertView;
     }
 
-    private void fileTypeSelectorInitialize(View child, View parent) {
-        final CustomButton gpxButton = (CustomButton) child.findViewById(R.id.gpxFileTypeButton);
-        final CustomButton kmlButton = (CustomButton) child.findViewById(R.id.kmlFileTypeButton);
-        gpxButton.setFocusable(false);
-        kmlButton.setFocusable(false);
-        final TextView headerValue = (TextView) parent.findViewById(R.id.group_file_value);
+    private View fileTypeChildInit(View child, View parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_file, null);
+        final CustomButton gpxFileTypeButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_file_gpx);
+        final CustomButton kmlFileTypeButton = (CustomButton) child.findViewById(R.id.settings_expandable_list_file_kml);
+        gpxFileTypeButton.setFocusable(false);
+        kmlFileTypeButton.setFocusable(false);
+        final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_file_value);
         switch(UserSettings.exportFileFormat) {
             case KML:
-                kmlButton.setButtonSelected(true);
-                gpxButton.setButtonSelected(false);
+                kmlFileTypeButton.setButtonSelected(true);
+                gpxFileTypeButton.setButtonSelected(false);
                 break;
             case GPX:
-                gpxButton.setButtonSelected(true);
-                kmlButton.setButtonSelected(false);
+                gpxFileTypeButton.setButtonSelected(true);
+                kmlFileTypeButton.setButtonSelected(false);
                 break;
         }
-        headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
-        gpxButton.setOnClickListener(new View.OnClickListener() {
+        headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+        gpxFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
-                    gpxButton.setButtonSelected(true);
-                    kmlButton.setButtonSelected(false);
+                    gpxFileTypeButton.setButtonSelected(true);
+                    kmlFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
+                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
                 }
             }
         });
-        kmlButton.setOnClickListener(new View.OnClickListener() {
+        kmlFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
-                    kmlButton.setButtonSelected(true);
-                    gpxButton.setButtonSelected(false);
+                    kmlFileTypeButton.setButtonSelected(true);
+                    gpxFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerValue.setText(context.getString(UserSettings.exportFileFormat.getResourceId()));
+                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
                 }
             }
         });
+        return convertView;
     }
 
-    private View initializeGroup(ExpandableListGroupType groupType, IResourced globalField){
-        LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
+    private View groupInit(ExpandableListGroupType groupType, IProperty propertyToUpdate){
         View convertView = layoutFactory.inflate(groupType.layoutResourceId,null);
-
-        TextView headerValue = (TextView) convertView.findViewById(groupType.valueResourceId);
-        TextView listGroupHeader = (TextView) convertView.findViewById(groupType.headerResourceId);
-
-        headerValue.setText(context.getString(globalField.getResourceId()));
-        listGroupHeader.setTypeface(null, Typeface.BOLD);
-        listGroupHeader.setText(context.getString(groupType.stringResourceId));
-
+        if(groupType.valueResourceId != -1) {
+            TextView headerValueTextView = (TextView) convertView.findViewById(groupType.valueResourceId);
+            headerValueTextView.setText(context.getString(propertyToUpdate.getStringResourceId()));
+        }
+        TextView headerKeyTextView = (TextView) convertView.findViewById(groupType.headerResourceId);
+        headerKeyTextView.setTypeface(null, Typeface.BOLD);
+        headerKeyTextView.setText(context.getString(groupType.stringResourceId));
         return convertView;
     }
 }

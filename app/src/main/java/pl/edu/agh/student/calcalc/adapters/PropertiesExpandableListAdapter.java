@@ -28,9 +28,9 @@ public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter
 
         if(convertView == null) {
             LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = layoutFactory.inflate(R.layout.expandable_list_group_file,null);
+            convertView = layoutFactory.inflate(R.layout.settings_expandable_list_group_file,null);
         }
-        TextView listGroupHeader = (TextView) convertView.findViewById(R.id.group_file_header);
+        TextView listGroupHeader = (TextView) convertView.findViewById(R.id.settings_group_file_header);
         listGroupHeader.setTypeface(null, Typeface.BOLD);
         listGroupHeader.setText(header);
 

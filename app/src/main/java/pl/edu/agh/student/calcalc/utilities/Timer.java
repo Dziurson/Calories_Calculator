@@ -1,5 +1,6 @@
 package pl.edu.agh.student.calcalc.utilities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.widget.TextView;
@@ -23,11 +24,12 @@ public class Timer {
     private Date pausedDate;
     private java.util.Timer timer;
     private TimerTask timertask;
+    @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss.SSS");
-    private final TextView textViewToUpdate;
+    private TextView textViewToUpdate;
 
 
-    public Timer(@NonNull final TextView textViewToUpdate, @NonNull Activity context) {
+    public Timer(TextView textViewToUpdate, @NonNull Activity context) {
         this.context = context;
         this.textViewToUpdate = textViewToUpdate;
         timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -45,7 +47,9 @@ public class Timer {
                     @Override
                     public void run() {
                         if(!isPaused)
-                            textViewToUpdate.setText(timeFormat.format(new Date(DateHelper.getIntervalWithCurrentDate(startDate))));
+                            if(textViewToUpdate != null) {
+                                textViewToUpdate.setText(timeFormat.format(new Date(DateHelper.getIntervalWithCurrentDate(startDate))));
+                            }
                     }
                 });
             }
@@ -69,6 +73,10 @@ public class Timer {
     public void pause() {
         isPaused = true;
         pausedDate = new Date();
+    }
+
+    public void setTextViewToUpdate(TextView textViewToUpdate) {
+        this.textViewToUpdate = textViewToUpdate;
     }
 
     public boolean isStarted() {

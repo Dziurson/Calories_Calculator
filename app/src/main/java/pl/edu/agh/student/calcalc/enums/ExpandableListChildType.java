@@ -6,5 +6,9 @@ public enum ExpandableListChildType {
     USER_WEIGHT,
     USER_HEIGHT,
     USER_SEX,
-    VELOCITY_UNITS;
+    VELOCITY_UNITS,
+    TIME,
+    LOCATION,
+    ALTITUDE,
+    VELOCITY
 }

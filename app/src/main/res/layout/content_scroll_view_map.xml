@@ -7,7 +7,7 @@
     android:weightSum="1">
 
     <fragment
-        android:id="@+id/mapGoogleMap"
+        android:id="@+id/map_activity_google_map"
         android:name="com.google.android.gms.maps.MapFragment"
         android:layout_width="match_parent"
         android:layout_height="300dp"

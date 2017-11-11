@@ -40,7 +40,7 @@ public class GpxFileSerializer {
 
     public boolean start(String filename, OutputFileFormat extension) {
         try {
-            fileOutputStream = new FileOutputStream(StringHelper.concat(gpxFileDir.toString(),"/",filename,context.getString(extension.getResourceId())),true);
+            fileOutputStream = new FileOutputStream(StringHelper.concat(gpxFileDir.toString(),"/",filename,context.getString(extension.getStringResourceId())),true);
             currentExtension = extension;
             serializer.setOutput(fileOutputStream, "UTF-8");
             startDocument();
