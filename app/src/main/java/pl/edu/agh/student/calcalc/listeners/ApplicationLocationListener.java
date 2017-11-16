@@ -9,17 +9,17 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import pl.edu.agh.student.calcalc.enums.VelocityType;
+import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.globals.Properties;
-import pl.edu.agh.student.calcalc.commands.LocationCommand;
-import pl.edu.agh.student.calcalc.commands.ProviderChangeCommand;
+import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
+import pl.edu.agh.student.calcalc.commands.OnProviderChangeCommand;
 
 public class ApplicationLocationListener implements LocationListener {
 
     private Location prevLocation;
 
-    private ArrayList<LocationCommand> onLocationChangedListeners = new ArrayList<>();
-    private ArrayList<ProviderChangeCommand> onGPSProviderChangedListeners = new ArrayList<>();
+    private ArrayList<OnLocationChangeCommand> onLocationChangedListeners = new ArrayList<>();
+    private ArrayList<OnProviderChangeCommand> onGPSProviderChangedListeners = new ArrayList<>();
     private LocationManager locManager;
     private static ApplicationLocationListener instance = null;
 
@@ -36,8 +36,8 @@ public class ApplicationLocationListener implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         Bundle extras = location.getExtras();
-        extras.putDouble(VelocityType.VELOCITY_IN_MPS.toString(),getVelocity(location));
-        extras.putDouble(VelocityType.VELOCITY_IN_KPH.toString(),getVelocity(location)*3.6);
+        extras.putDouble(VelocityUnit.VELOCITY_IN_MPS.toString(),getVelocity(location));
+        extras.putDouble(VelocityUnit.VELOCITY_IN_KPH.toString(),getVelocity(location)*3.6);
         location.setExtras(extras);
         executeLocationEvents(location);
         prevLocation = location;
@@ -68,23 +68,23 @@ public class ApplicationLocationListener implements LocationListener {
 
     private void executeLocationEvents(Location location) {
         if (onLocationChangedListeners.size() != 0) {
-            for (LocationCommand command : onLocationChangedListeners) {
+            for (OnLocationChangeCommand command : onLocationChangedListeners) {
                 command.onLocationChanged(location);
             }
         }
     }
 
-    public void addOnLocationChangedCommand(LocationCommand command){
+    public void addOnLocationChangedCommand(OnLocationChangeCommand command){
         onLocationChangedListeners.add(command);
     }
 
-    public void addOnProviderChangedCommand(ProviderChangeCommand command) {
+    public void addOnProviderChangedCommand(OnProviderChangeCommand command) {
         onGPSProviderChangedListeners.add(command);
     }
 
     private void executeOnProviderChangedEvents(boolean isProviderEnabled) {
         if (onGPSProviderChangedListeners.size() != 0) {
-            for (ProviderChangeCommand command : onGPSProviderChangedListeners) {
+            for (OnProviderChangeCommand command : onGPSProviderChangedListeners) {
                 command.execute(isProviderEnabled);
             }
         }

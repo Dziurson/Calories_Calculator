@@ -1,6 +1,5 @@
 package pl.edu.agh.student.calcalc.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
@@ -13,12 +12,12 @@ import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.containers.Tuple;
-import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
-import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
 
 public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter {
 
-    public PropertiesExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
+    public PropertiesExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>>> childrenMap) {
         super(context,childrenMap);
     }
 
@@ -40,7 +39,7 @@ public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        final ExpandableListChildType childType = (ExpandableListChildType) getChild(groupPosition, childPosition);
+        final ExpandableListViewChild childType = (ExpandableListViewChild) getChild(groupPosition, childPosition);
         return convertView;
     }
 }

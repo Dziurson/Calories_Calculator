@@ -28,7 +28,7 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@drawable/ic_icon_start" />
 
-    <pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton
+    <pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton
         app:animation_enabled="true"
         app:animation_duration="500"
         android:visibility="invisible"

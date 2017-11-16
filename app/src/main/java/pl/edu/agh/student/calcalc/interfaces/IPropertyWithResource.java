@@ -1,5 +1,5 @@
 package pl.edu.agh.student.calcalc.interfaces;
 
-public interface IProperty {
+public interface IPropertyWithResource {
     int getStringResourceId();
 }

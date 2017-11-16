@@ -12,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -20,16 +21,18 @@ import java.util.List;
 import java.util.Locale;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.commands.LocationCommand;
+import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
 import pl.edu.agh.student.calcalc.containers.Tuple;
-import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
-import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
+import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewParameter;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
-public class MainExpandableListAdapter extends CustomExpandableListAdapter implements LocationCommand, OnMapReadyCallback{
+public class MainExpandableListAdapter extends CustomExpandableListAdapter implements OnLocationChangeCommand, OnMapReadyCallback{
 
     private Timer durationTimer;
     private ApplicationLocationListener locationListener;
@@ -40,22 +43,24 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
     private LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     private View mapView;
     private GoogleMap googleMap;
+    private CustomExpandableListView sender;
 
-     public MainExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType, List<ExpandableListChildType>>> initializationList, HashMap<String,Object> extras) {
+    public MainExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListViewGroup, List<ExpandableListViewChild>>> initializationList, HashMap<ExpandableListViewParameter,Object> extras) {
         super(context, initializationList);
-        durationTimer = (Timer) extras.get("timer");
+        durationTimer = (Timer) extras.get(ExpandableListViewParameter.TIMER);
+        sender = (CustomExpandableListView) extras.get(ExpandableListViewParameter.SENDER);
         locationListener = ApplicationLocationListener.getInstance();
         locationListener.addOnLocationChangedCommand(this);
     }
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        return initializeGroup((ExpandableListGroupType) getGroup(groupPosition));
+        return initializeGroup((ExpandableListViewGroup) getGroup(groupPosition));
     }
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        switch((ExpandableListChildType) getChild(groupPosition, childPosition)) {
+        switch((ExpandableListViewChild) getChild(groupPosition, childPosition)) {
             case TIME:
                 convertView = layoutFactory.inflate(R.layout.main_expandable_list_child_time, null);
                 durationTimer.setTextViewToUpdate((TextView)convertView.findViewById(R.id.main_expandable_list_timer));
@@ -76,6 +81,7 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
             case MAP:
                 if (mapView == null) {
                     mapView = layoutFactory.inflate(R.layout.main_expandable_list_chid_map, null);
+                    sender.enableTouchForView(mapView);
                     initializeMap();
                 }
                 convertView = mapView;
@@ -98,8 +104,7 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
             velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),context.getString(UserSettings.usedVelocity.getStringResourceId())));
         }
         if(googleMap != null) {
-            googleMap.clear();
-            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("TEST")); //TODO: REPLACE TEST WITH CALORIES FROM START
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("TEST").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
         }
     }
@@ -109,7 +114,7 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
         this.googleMap = googleMap;
     }
 
-    private View initializeGroup(ExpandableListGroupType groupType){
+    private View initializeGroup(ExpandableListViewGroup groupType){
         View convertView = layoutFactory.inflate(groupType.layoutResourceId,null);
         TextView header = (TextView) convertView.findViewById(groupType.headerResourceId);
         header.setText(groupType.stringResourceId);

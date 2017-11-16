@@ -16,7 +16,7 @@
         android:textSize="10sp"
         android:text="@string/gps_disabled" />
 
-    <ExpandableListView
+    <pl.edu.agh.student.calcalc.controls.CustomExpandableListView
         android:id="@+id/main_activity_expandable_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

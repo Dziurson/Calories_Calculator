@@ -16,7 +16,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,18 +25,20 @@ import java.util.List;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.adapters.MainExpandableListAdapter;
 import pl.edu.agh.student.calcalc.containers.Tuple;
-import pl.edu.agh.student.calcalc.controls.AnimatedFloatingActionButton;
-import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
-import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
-import pl.edu.agh.student.calcalc.enums.GPSState;
+import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
+import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewParameter;
+import pl.edu.agh.student.calcalc.enums.LocationServiceState;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.helpers.FileHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
-import pl.edu.agh.student.calcalc.commands.LocationCommand;
-import pl.edu.agh.student.calcalc.commands.ProviderChangeCommand;
-import pl.edu.agh.student.calcalc.utilities.GpxFileSerializer;
+import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
+import pl.edu.agh.student.calcalc.commands.OnProviderChangeCommand;
+import pl.edu.agh.student.calcalc.utilities.FileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
@@ -46,10 +47,10 @@ public class MainActivity extends AppCompatActivity
     private TextView gpsStateTextView;
     private Timer durationTimer;
     private FloatingActionButton startActivityButton;
-    private AnimatedFloatingActionButton pauseActivityButton;
+    private CustomFloatingActionButton pauseActivityButton;
     private NavigationView navSideMenu;
     private ApplicationLocationListener locationListener;
-    private GpxFileSerializer gpxSerializer;
+    private FileSerializer gpxSerializer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         durationTimer = new Timer(null, this);
         startActivityButton = (FloatingActionButton) findViewById(R.id.fabRun);
-        pauseActivityButton = (AnimatedFloatingActionButton) findViewById(R.id.fabPause);
+        pauseActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabPause);
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         locationListener = ApplicationLocationListener.getInstance();
@@ -174,7 +175,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        locationListener.addOnLocationChangedCommand(new LocationCommand() {
+        locationListener.addOnLocationChangedCommand(new OnLocationChangeCommand() {
             @Override
             public void onLocationChanged(Location location) {
                 if(gpxSerializer != null) {
@@ -185,14 +186,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        locationListener.addOnProviderChangedCommand(new ProviderChangeCommand() {
+        locationListener.addOnProviderChangedCommand(new OnProviderChangeCommand() {
             @Override
             public void execute(boolean isGPSEnabled) {
                 if (isGPSEnabled) {
-                    setGPSStateLabel(GPSState.GPS_STATE_ENABLED);
+                    setGPSStateLabel(LocationServiceState.GPS_STATE_ENABLED);
                 }
                 else {
-                    setGPSStateLabel(GPSState.GPS_STATE_DISABLED);
+                    setGPSStateLabel(LocationServiceState.GPS_STATE_DISABLED);
                 }
             }
         });
@@ -212,10 +213,10 @@ public class MainActivity extends AppCompatActivity
 
     private void setDefaults(){
         if(locationListener.isGPSEnabled()) {
-            setGPSStateLabel(GPSState.GPS_STATE_ENABLED);
+            setGPSStateLabel(LocationServiceState.GPS_STATE_ENABLED);
         }
         else {
-            setGPSStateLabel(GPSState.GPS_STATE_DISABLED);
+            setGPSStateLabel(LocationServiceState.GPS_STATE_DISABLED);
         }
     }
 
@@ -226,7 +227,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking(View view) {
-        gpxSerializer = new GpxFileSerializer(this);
+        gpxSerializer = new FileSerializer(this);
         if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
             durationTimer.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
@@ -250,7 +251,7 @@ public class MainActivity extends AppCompatActivity
         pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
     }
 
-    private void setGPSStateLabel(GPSState state) {
+    private void setGPSStateLabel(LocationServiceState state) {
         switch (state){
             case GPS_STATE_ENABLED:
                 gpsStateTextView.setText(R.string.gps_enabled);
@@ -275,33 +276,34 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeExpandableList() {
-        ExpandableListView mainExpandableListView = (ExpandableListView) findViewById(R.id.main_activity_expandable_list);
+        CustomExpandableListView mainExpandableListView = (CustomExpandableListView) findViewById(R.id.main_activity_expandable_list);
 
-        List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> listMap = new ArrayList<>();
+        List<Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>>> listMap = new ArrayList<>();
 
-        List<ExpandableListChildType> fileTypeChildren = new ArrayList<>();
-        fileTypeChildren.add(ExpandableListChildType.TIME);
-        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> fileTypeEntry = new Tuple<>(ExpandableListGroupType.TIME, fileTypeChildren);
+        List<ExpandableListViewChild> fileTypeChildren = new ArrayList<>();
+        fileTypeChildren.add(ExpandableListViewChild.TIME);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> fileTypeEntry = new Tuple<>(ExpandableListViewGroup.TIME, fileTypeChildren);
         listMap.add(fileTypeEntry);
 
-        List<ExpandableListChildType> locationChildren = new ArrayList<>();
-        locationChildren.add(ExpandableListChildType.LOCATION);
-        locationChildren.add(ExpandableListChildType.MAP);
-        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> locationEntry = new Tuple<>(ExpandableListGroupType.LOCATION, locationChildren);
+        List<ExpandableListViewChild> locationChildren = new ArrayList<>();
+        locationChildren.add(ExpandableListViewChild.LOCATION);
+        locationChildren.add(ExpandableListViewChild.MAP);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> locationEntry = new Tuple<>(ExpandableListViewGroup.LOCATION, locationChildren);
         listMap.add(locationEntry);
 
-        List<ExpandableListChildType> altitudeChildren = new ArrayList<>();
-        altitudeChildren.add(ExpandableListChildType.ALTITUDE);
-        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> altitudeEntry = new Tuple<>(ExpandableListGroupType.ALTITUDE, altitudeChildren);
+        List<ExpandableListViewChild> altitudeChildren = new ArrayList<>();
+        altitudeChildren.add(ExpandableListViewChild.ALTITUDE);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> altitudeEntry = new Tuple<>(ExpandableListViewGroup.ALTITUDE, altitudeChildren);
         listMap.add(altitudeEntry);
 
-        List<ExpandableListChildType> velocityChildren = new ArrayList<>();
-        velocityChildren.add(ExpandableListChildType.VELOCITY);
-        Tuple<ExpandableListGroupType,List<ExpandableListChildType>> velocityEntry = new Tuple<>(ExpandableListGroupType.VELOCITY, velocityChildren);
+        List<ExpandableListViewChild> velocityChildren = new ArrayList<>();
+        velocityChildren.add(ExpandableListViewChild.VELOCITY);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> velocityEntry = new Tuple<>(ExpandableListViewGroup.VELOCITY, velocityChildren);
         listMap.add(velocityEntry);
 
-        HashMap<String,Object> extras = new HashMap<>();
-        extras.put("timer", durationTimer);
+        HashMap<ExpandableListViewParameter,Object> extras = new HashMap<>();
+        extras.put(ExpandableListViewParameter.TIMER, durationTimer);
+        extras.put(ExpandableListViewParameter.SENDER, mainExpandableListView);
 
         MainExpandableListAdapter mainExpandableListAdapter = new MainExpandableListAdapter(this, listMap, extras);
 

@@ -17,7 +17,7 @@ import pl.edu.agh.student.calcalc.helpers.StringHelper;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
-public class GpxFileSerializer {
+public class FileSerializer {
 
     private XmlSerializer serializer;
     private FileOutputStream fileOutputStream;
@@ -28,7 +28,7 @@ public class GpxFileSerializer {
     private OutputFileFormat currentExtension;
     private Context context;
 
-    public  GpxFileSerializer(Context context) {
+    public FileSerializer(Context context) {
         this.context = context;
         serializer = Xml.newSerializer();
         serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);

@@ -21,7 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.controls.ScrollViewTouchEnabled;
+import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 
 public class MapActivity extends AppCompatActivity
@@ -29,7 +29,7 @@ public class MapActivity extends AppCompatActivity
 
     NavigationView navSideMenu;
     SupportMapFragment mapGoogleMap;
-    ScrollViewTouchEnabled msvActivityContentContainer;
+    CustomScrollView msvActivityContentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class MapActivity extends AppCompatActivity
         navSideMenu.setNavigationItemSelectedListener(this);
         mapGoogleMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_activity_google_map);
         mapGoogleMap.getMapAsync(this);
-        msvActivityContentContainer = (ScrollViewTouchEnabled) findViewById(R.id.map_scroll_view);
+        msvActivityContentContainer = (CustomScrollView) findViewById(R.id.map_scroll_view);
         msvActivityContentContainer.enableTouchForView(mapGoogleMap.getView());
     }
 

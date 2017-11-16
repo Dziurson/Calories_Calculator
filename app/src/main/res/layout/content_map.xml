@@ -8,7 +8,7 @@
     tools:context="pl.edu.agh.student.calcalc.activities.MapActivity"
     tools:showIn="@layout/app_bar_map">
 
-    <pl.edu.agh.student.calcalc.controls.ScrollViewTouchEnabled
+    <pl.edu.agh.student.calcalc.controls.CustomScrollView
         android:id="@+id/map_scroll_view"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -19,5 +19,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
         <include layout="@layout/content_scroll_view_map" />
-    </pl.edu.agh.student.calcalc.controls.ScrollViewTouchEnabled>
+    </pl.edu.agh.student.calcalc.controls.CustomScrollView>
 </android.support.constraint.ConstraintLayout>

@@ -2,7 +2,7 @@ package pl.edu.agh.student.calcalc.enums;
 
 import pl.edu.agh.student.calcalc.R;
 
-public enum ExpandableListGroupType {
+public enum ExpandableListViewGroup {
     VELOCITY_UNITS(R.layout.settings_expandable_list_group_velocity, R.id.settings_group_velocity_header, R.id.settings_group_velocity_value, R.string.velocity_label),
     EXPORT_FILE_TYPE(R.layout.settings_expandable_list_group_file, R.id.settings_group_file_header, R.id.settings_group_file_value, R.string.output_file_type),
     TIME(R.layout.main_expandable_list_group_time,R.id.main_group_time_header,-1,R.string.timer_label),
@@ -15,7 +15,7 @@ public enum ExpandableListGroupType {
     public final int layoutResourceId;
     public final int valueResourceId;
 
-    ExpandableListGroupType(int layoutResourceId_, int headerResourceId_, int valueResourceId_, int stringResourceId_) {
+    ExpandableListViewGroup(int layoutResourceId_, int headerResourceId_, int valueResourceId_, int stringResourceId_) {
         this.layoutResourceId = layoutResourceId_;
         this.headerResourceId = headerResourceId_;
         this.valueResourceId = valueResourceId_;

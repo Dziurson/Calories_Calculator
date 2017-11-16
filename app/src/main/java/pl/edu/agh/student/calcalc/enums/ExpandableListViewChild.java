@@ -1,6 +1,6 @@
 package pl.edu.agh.student.calcalc.enums;
 
-public enum ExpandableListChildType {
+public enum ExpandableListViewChild {
     FILE_TYPE,
     USER_AGE,
     USER_WEIGHT,
