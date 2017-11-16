@@ -10,5 +10,6 @@ public enum ExpandableListChildType {
     TIME,
     LOCATION,
     ALTITUDE,
-    VELOCITY
+    VELOCITY,
+    MAP
 }

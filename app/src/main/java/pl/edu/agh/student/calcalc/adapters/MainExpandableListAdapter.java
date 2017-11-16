@@ -1,12 +1,19 @@
 package pl.edu.agh.student.calcalc.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +29,7 @@ import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
-public class MainExpandableListAdapter extends CustomExpandableListAdapter implements LocationCommand{
+public class MainExpandableListAdapter extends CustomExpandableListAdapter implements LocationCommand, OnMapReadyCallback{
 
     private Timer durationTimer;
     private ApplicationLocationListener locationListener;
@@ -31,8 +38,10 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
     private TextView altitudeTextView;
     private TextView velocityTextView;
     private LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    private View mapView;
+    private GoogleMap googleMap;
 
-        public MainExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType, List<ExpandableListChildType>>> initializationList, HashMap<String,Object> extras) {
+     public MainExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType, List<ExpandableListChildType>>> initializationList, HashMap<String,Object> extras) {
         super(context, initializationList);
         durationTimer = (Timer) extras.get("timer");
         locationListener = ApplicationLocationListener.getInstance();
@@ -64,6 +73,13 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
                 convertView = layoutFactory.inflate(R.layout.main_expandable_list_child_velocity, null);
                 velocityTextView = (TextView) convertView.findViewById(R.id.main_expandable_list_velocity);
                 break;
+            case MAP:
+                if (mapView == null) {
+                    mapView = layoutFactory.inflate(R.layout.main_expandable_list_chid_map, null);
+                    initializeMap();
+                }
+                convertView = mapView;
+                break;
         }
         return convertView;
     }
@@ -81,6 +97,16 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
         if(velocityTextView != null) {
             velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),context.getString(UserSettings.usedVelocity.getStringResourceId())));
         }
+        if(googleMap != null) {
+            googleMap.clear();
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("TEST")); //TODO: REPLACE TEST WITH CALORIES FROM START
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
     }
 
     private View initializeGroup(ExpandableListGroupType groupType){
@@ -88,5 +114,10 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
         TextView header = (TextView) convertView.findViewById(groupType.headerResourceId);
         header.setText(groupType.stringResourceId);
         return convertView;
+    }
+
+    private void initializeMap() {
+        SupportMapFragment mapFragment = (SupportMapFragment) context.getSupportFragmentManager().findFragmentById(R.id.main_expandable_list_map);
+        mapFragment.getMapAsync(this);
     }
 }

@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity
 
         List<ExpandableListChildType> locationChildren = new ArrayList<>();
         locationChildren.add(ExpandableListChildType.LOCATION);
+        locationChildren.add(ExpandableListChildType.MAP);
         Tuple<ExpandableListGroupType,List<ExpandableListChildType>> locationEntry = new Tuple<>(ExpandableListGroupType.LOCATION, locationChildren);
         listMap.add(locationEntry);
 

@@ -1,8 +1,8 @@
 package pl.edu.agh.student.calcalc.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +24,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
     LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    public SettingsExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
+    public SettingsExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
         super(context,initializationList);
     }
 

@@ -1,6 +1,6 @@
 package pl.edu.agh.student.calcalc.adapters;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -13,10 +13,10 @@ import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 
 public abstract class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
-    protected Activity context;
+    protected FragmentActivity context;
     private List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList;
 
-    public CustomExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
+    public CustomExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
         this.initializationList = initializationList;
         this.context = context;
     }

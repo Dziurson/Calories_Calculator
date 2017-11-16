@@ -3,6 +3,7 @@ package pl.edu.agh.student.calcalc.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +18,7 @@ import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
 
 public class PropertiesExpandableListAdapter extends CustomExpandableListAdapter {
 
-    public PropertiesExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
+    public PropertiesExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> childrenMap) {
         super(context,childrenMap);
     }
 
