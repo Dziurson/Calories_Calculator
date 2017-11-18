@@ -124,6 +124,11 @@ public class SettingsActivity extends AppCompatActivity
         Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> velocityTypeEntry = new Tuple<>(ExpandableListViewGroup.VELOCITY_UNITS,velocityTypeChildren);
         listMap.add(velocityTypeEntry);
 
+        List<ExpandableListViewChild> mapPointsChildren = new ArrayList<>();
+        mapPointsChildren.add(ExpandableListViewChild.MAP_POINTS);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> mapPointsEntry = new Tuple<>(ExpandableListViewGroup.MAP_POINTS,mapPointsChildren);
+        listMap.add(mapPointsEntry);
+
         listAdapter = new SettingsExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
     }

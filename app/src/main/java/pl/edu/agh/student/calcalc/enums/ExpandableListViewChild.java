@@ -11,5 +11,6 @@ public enum ExpandableListViewChild {
     LOCATION,
     ALTITUDE,
     VELOCITY,
-    MAP
+    MAP,
+    MAP_POINTS
 }

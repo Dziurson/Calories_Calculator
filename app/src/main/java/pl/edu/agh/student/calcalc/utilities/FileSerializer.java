@@ -1,6 +1,7 @@
 package pl.edu.agh.student.calcalc.utilities;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.location.Location;
 import android.util.Xml;
@@ -26,9 +27,9 @@ public class FileSerializer {
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
     private OutputFileFormat currentExtension;
-    private Context context;
+    private Activity context;
 
-    public FileSerializer(Context context) {
+    public FileSerializer(Activity context) {
         this.context = context;
         serializer = Xml.newSerializer();
         serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
@@ -40,7 +41,7 @@ public class FileSerializer {
 
     public boolean start(String filename, OutputFileFormat extension) {
         try {
-            fileOutputStream = new FileOutputStream(StringHelper.concat(gpxFileDir.toString(),"/",filename,context.getString(extension.getStringResourceId())),true);
+            fileOutputStream = new FileOutputStream(StringHelper.concat(gpxFileDir.toString(),"/",filename,extension.getString(context)),true);
             currentExtension = extension;
             serializer.setOutput(fileOutputStream, "UTF-8");
             startDocument();

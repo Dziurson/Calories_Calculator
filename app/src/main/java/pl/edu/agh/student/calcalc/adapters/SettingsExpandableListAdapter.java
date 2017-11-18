@@ -37,6 +37,9 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             case VELOCITY_UNITS:
                 convertView = groupInit(ExpandableListViewGroup.VELOCITY_UNITS,UserSettings.usedVelocity);
                 break;
+            case MAP_POINTS:
+                convertView = groupInit(ExpandableListViewGroup.MAP_POINTS,UserSettings.delayBetweenPoints);
+                break;
         }
         return convertView;
     }
@@ -50,6 +53,8 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             case VELOCITY_UNITS:
                 convertView = velocityUnitChildInit(parent);
                 break;
+            case MAP_POINTS:
+                convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_map_points, null);
         }
         return convertView;
     }
@@ -71,7 +76,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                 metersPerSecondButton.setButtonSelected(false);
                 break;
         }
-        headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+        headerTextView.setText(UserSettings.usedVelocity.getString(context));
         metersPerSecondButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,7 +84,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     metersPerSecondButton.setButtonSelected(true);
                     kilometersPerHourButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityUnit.VELOCITY_IN_MPS;
-                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+                    headerTextView.setText(UserSettings.usedVelocity.getString(context));
                 }
             }
         });
@@ -90,7 +95,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     kilometersPerHourButton.setButtonSelected(true);
                     metersPerSecondButton.setButtonSelected(false);
                     UserSettings.usedVelocity = VelocityUnit.VELOCITY_IN_KPH;
-                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+                    headerTextView.setText(UserSettings.usedVelocity.getString(context));
                 }
             }
         });
@@ -114,7 +119,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                 kmlFileTypeButton.setButtonSelected(false);
                 break;
         }
-        headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
         gpxFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +127,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     gpxFileTypeButton.setButtonSelected(true);
                     kmlFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
                 }
             }
         });
@@ -133,7 +138,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     kmlFileTypeButton.setButtonSelected(true);
                     gpxFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
                 }
             }
         });
@@ -144,7 +149,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         View convertView = layoutFactory.inflate(groupType.layoutResourceId,null);
         if(groupType.valueResourceId != -1) {
             TextView headerValueTextView = (TextView) convertView.findViewById(groupType.valueResourceId);
-            headerValueTextView.setText(context.getString(propertyToUpdate.getStringResourceId()));
+            headerValueTextView.setText(propertyToUpdate.getString(context));
         }
         TextView headerKeyTextView = (TextView) convertView.findViewById(groupType.headerResourceId);
         headerKeyTextView.setTypeface(null, Typeface.BOLD);

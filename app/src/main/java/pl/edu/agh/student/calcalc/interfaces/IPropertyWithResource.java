@@ -1,5 +1,7 @@
 package pl.edu.agh.student.calcalc.interfaces;
 
+import android.app.Activity;
+
 public interface IPropertyWithResource {
-    int getStringResourceId();
+    String getString(Activity context);
 }

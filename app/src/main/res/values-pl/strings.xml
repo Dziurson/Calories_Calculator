@@ -26,4 +26,5 @@
     <string name="title_activity_properties">Właściwości</string>
     <string name="title_activity_map">Mapa</string>
     <string name="output_file_type">Typ Pliku Wyjściowego</string>
+    <string name="map_points">Częstotliwość aktualizacji punktów</string>
 </resources>

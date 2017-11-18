@@ -15,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
     private View mapView;
     private GoogleMap googleMap;
     private CustomExpandableListView sender;
+    private Location lastLocation;
 
     public MainExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListViewGroup, List<ExpandableListViewChild>>> initializationList, HashMap<ExpandableListViewParameter,Object> extras) {
         super(context, initializationList);
@@ -101,12 +103,19 @@ public class MainExpandableListAdapter extends CustomExpandableListAdapter imple
             altitudeTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getAltitude(),context.getString(R.string.m_a_s_l)));
         }
         if(velocityTextView != null) {
-            velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),context.getString(UserSettings.usedVelocity.getStringResourceId())));
+            velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),UserSettings.usedVelocity.getString(context)));
         }
         if(googleMap != null) {
-            googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("TEST").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
+            //googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(),location.getLongitude())).title("TEST").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
+            if(lastLocation != null) {
+                googleMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude()))
+                        .add(new LatLng(location.getLatitude(),location.getLongitude()))
+                        .color(context.getResources().getColor(R.color.colorLightBlue)));
+            }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
         }
+        lastLocation = location;
     }
 
     @Override
