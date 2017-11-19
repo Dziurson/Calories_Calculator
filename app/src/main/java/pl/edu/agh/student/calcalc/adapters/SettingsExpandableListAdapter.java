@@ -6,12 +6,13 @@ import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
@@ -54,7 +55,8 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                 convertView = velocityUnitChildInit(parent);
                 break;
             case MAP_POINTS:
-                convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_map_points, null);
+                convertView = mapPointsChildInit(parent);
+                break;
         }
         return convertView;
     }
@@ -140,6 +142,31 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     UserSettings.exportFileFormat = OutputFileFormat.KML;
                     headerTextView.setText(UserSettings.exportFileFormat.getString(context));
                 }
+            }
+        });
+        return convertView;
+    }
+
+    private View mapPointsChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_map_points, null);
+        final SeekBar mapPointsSeekBar = (SeekBar) convertView.findViewById(R.id.settings_expandable_list_map_points);
+        final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_map_points_value);
+        mapPointsSeekBar.setProgress(UserSettings.delayBetweenPoints.getValue());
+        mapPointsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                UserSettings.delayBetweenPoints.setValue(progress);
+                headerTextView.setText(UserSettings.delayBetweenPoints.getString(context));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
         return convertView;

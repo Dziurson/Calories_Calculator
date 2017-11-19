@@ -2,7 +2,7 @@ package pl.edu.agh.student.calcalc.helpers;
 
 import android.location.Location;
 
-import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.types.Tuple;
 
 public class LocationHelper {
     public static Tuple<String,String> format(Location location) {

@@ -1,19 +1,20 @@
-package pl.edu.agh.student.calcalc.containers;
+package pl.edu.agh.student.calcalc.types;
 
 import android.app.Activity;
 
+import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 
-public class CustomInteger implements IPropertyWithResource {
+public class MapPointInteger implements IPropertyWithResource {
 
     int value;
 
-    public CustomInteger(int value) {
+    public MapPointInteger(int value) {
         this.value = value;
     }
     @Override
     public String getString(Activity context) {
-        return ((Integer)value).toString();
+        return (value == 0) ? context.getString(R.string.no_points) : ((Integer)value).toString();
     }
 
     public int getValue() {

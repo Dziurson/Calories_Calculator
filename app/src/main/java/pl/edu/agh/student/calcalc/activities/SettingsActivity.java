@@ -17,7 +17,7 @@ import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.adapters.SettingsExpandableListAdapter;
-import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;

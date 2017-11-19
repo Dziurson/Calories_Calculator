@@ -11,10 +11,6 @@ import android.view.View;
 import pl.edu.agh.student.calcalc.helpers.BooleanHelper;
 import pl.edu.agh.student.calcalc.helpers.IntegerHelper;
 
-/**
- * Created by jakub on 18.10.2017.
- */
-
 public class CustomFloatingActionButton extends FloatingActionButton {
 
     private int animationDuration;

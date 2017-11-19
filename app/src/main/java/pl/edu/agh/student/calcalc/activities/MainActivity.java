@@ -1,12 +1,14 @@
 package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
+import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,20 +18,25 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.Locale;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.adapters.MainExpandableListAdapter;
-import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.controls.CustomScrollView;
+import pl.edu.agh.student.calcalc.helpers.LocationHelper;
+import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
-import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
-import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
-import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
-import pl.edu.agh.student.calcalc.enums.ExpandableListViewParameter;
 import pl.edu.agh.student.calcalc.enums.LocationServiceState;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
@@ -42,7 +49,7 @@ import pl.edu.agh.student.calcalc.utilities.FileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback, OnLocationChangeCommand {
 
     private TextView gpsStateTextView;
     private Timer durationTimer;
@@ -51,6 +58,17 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navSideMenu;
     private ApplicationLocationListener locationListener;
     private FileSerializer gpxSerializer;
+    private TextView timerTextView;
+    private TextView longitudeTextView;
+    private TextView latitudeTextView;
+    private TextView altitudeTextView;
+    private TextView velocityTextView;
+    private SupportMapFragment googleMapFragment;
+    private GoogleMap googleMap;
+    private Location lastLocation;
+    private CustomScrollView mainActivityScrollView;
+    private int pointToDrawMarker = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,12 +84,18 @@ public class MainActivity extends AppCompatActivity
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         locationListener = ApplicationLocationListener.getInstance();
-        gpsStateTextView = (TextView) findViewById(R.id.main_activity_gps_state);
+        locationListener.addOnLocationChangedCommand(this);
+        mainActivityScrollView = (CustomScrollView) findViewById(R.id.main_activity_scroll_view);
 
-        initializeExpandableList();
         setSupportActionBar(toolbar);
+        initializeMap();
+        initializeTextViews();
         initializeListeners();
         setDefaults();
+
+        durationTimer.setTextViewToUpdate(timerTextView);
+        mainActivityScrollView.enableTouchForView(googleMapFragment.getView());
+
 
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -84,6 +108,30 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         navSideMenu.setCheckedItem(R.id.dmi_home);
         super.onResume();
+        onRotate();
+    }
+
+    private void onRotate() {
+        if(googleMapFragment != null) {
+            DisplayMetrics metrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            View mapView = googleMapFragment.getView();
+            ViewGroup.LayoutParams mapParams = mapView.getLayoutParams();
+            switch (getResources().getConfiguration().orientation) {
+                case Configuration.ORIENTATION_LANDSCAPE:
+                    if (mapParams != null) {
+                        mapParams.height = (int) Math.ceil(150 * metrics.density);
+                        mapView.setLayoutParams(mapParams);
+                    }
+                    break;
+                case Configuration.ORIENTATION_PORTRAIT:
+                    if (mapParams != null) {
+                        mapParams.height = (int) Math.ceil(300 * metrics.density);
+                        mapView.setLayoutParams(mapParams);
+                    }
+                    break;
+            }
+        }
     }
 
     @Override
@@ -140,6 +188,52 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
+                if(locationListener.isGPSEnabled()) {
+                    locationListener.requestLocationData();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Tuple<String, String> formattedLocationTuple = LocationHelper.format(location);
+        if(latitudeTextView != null && longitudeTextView != null) {
+            latitudeTextView.setText(formattedLocationTuple.first);
+            longitudeTextView.setText(formattedLocationTuple.second);
+        }
+        if(altitudeTextView != null) {
+            altitudeTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getAltitude(),getString(R.string.m_a_s_l)));
+        }
+        if(velocityTextView != null) {
+            velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),UserSettings.usedVelocity.getString(this)));
+        }
+        if(googleMap != null) {
+            if(pointToDrawMarker <= 0 && UserSettings.delayBetweenPoints.getValue() != 0) {
+                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("TEST").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
+                pointToDrawMarker = UserSettings.delayBetweenPoints.getValue();
+            }
+            if(lastLocation != null) {
+                googleMap.addPolyline(new PolylineOptions()
+                        .add(new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude()))
+                        .add(new LatLng(location.getLatitude(),location.getLongitude()))
+                        .color(getResources().getColor(R.color.colorLightBlue)));
+            }
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
+        }
+        lastLocation = location;
+        pointToDrawMarker--;
     }
 
     private void initializeListeners() {
@@ -264,49 +358,17 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
-                if(locationListener.isGPSEnabled()) {
-                    locationListener.requestLocationData();
-                }
-                break;
-        }
+    private void initializeTextViews() {
+        gpsStateTextView = (TextView) findViewById(R.id.main_activity_gps_state);
+        timerTextView = (TextView) findViewById(R.id.main_activity_timer);
+        longitudeTextView = (TextView) findViewById(R.id.main_activity_longitude);
+        latitudeTextView = (TextView) findViewById(R.id.main_activity_latitude);
+        altitudeTextView = (TextView) findViewById(R.id.main_activity_altitude);
+        velocityTextView = (TextView) findViewById(R.id.main_activity_velocity);
     }
 
-    private void initializeExpandableList() {
-        CustomExpandableListView mainExpandableListView = (CustomExpandableListView) findViewById(R.id.main_activity_expandable_list);
-
-        List<Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>>> listMap = new ArrayList<>();
-
-        List<ExpandableListViewChild> fileTypeChildren = new ArrayList<>();
-        fileTypeChildren.add(ExpandableListViewChild.TIME);
-        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> fileTypeEntry = new Tuple<>(ExpandableListViewGroup.TIME, fileTypeChildren);
-        listMap.add(fileTypeEntry);
-
-        List<ExpandableListViewChild> locationChildren = new ArrayList<>();
-        locationChildren.add(ExpandableListViewChild.LOCATION);
-        locationChildren.add(ExpandableListViewChild.MAP);
-        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> locationEntry = new Tuple<>(ExpandableListViewGroup.LOCATION, locationChildren);
-        listMap.add(locationEntry);
-
-        List<ExpandableListViewChild> altitudeChildren = new ArrayList<>();
-        altitudeChildren.add(ExpandableListViewChild.ALTITUDE);
-        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> altitudeEntry = new Tuple<>(ExpandableListViewGroup.ALTITUDE, altitudeChildren);
-        listMap.add(altitudeEntry);
-
-        List<ExpandableListViewChild> velocityChildren = new ArrayList<>();
-        velocityChildren.add(ExpandableListViewChild.VELOCITY);
-        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> velocityEntry = new Tuple<>(ExpandableListViewGroup.VELOCITY, velocityChildren);
-        listMap.add(velocityEntry);
-
-        HashMap<ExpandableListViewParameter,Object> extras = new HashMap<>();
-        extras.put(ExpandableListViewParameter.TIMER, durationTimer);
-        extras.put(ExpandableListViewParameter.SENDER, mainExpandableListView);
-
-        MainExpandableListAdapter mainExpandableListAdapter = new MainExpandableListAdapter(this, listMap, extras);
-
-        mainExpandableListView.setAdapter(mainExpandableListAdapter);
+    private void initializeMap() {
+        googleMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.main_activity_map);
+        googleMapFragment.getMapAsync(this);
     }
 }
