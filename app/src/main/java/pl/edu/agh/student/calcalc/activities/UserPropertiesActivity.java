@@ -11,13 +11,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PropertiesActivity extends AppCompatActivity
+import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.adapters.UserPropertiesExpandableListAdapter;
+import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
+import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.types.Tuple;
+
+public class UserPropertiesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     NavigationView navSideMenu;
+    UserPropertiesExpandableListAdapter listAdapter;
+    CustomExpandableListView expListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +44,8 @@ public class PropertiesActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
+
+        prepareExpandableList();
     }
 
     @Override
@@ -97,5 +109,24 @@ public class PropertiesActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void prepareExpandableList() {
+        expListView = (CustomExpandableListView) findViewById(R.id.user_properties_activity_expandable_list);
+
+        List<Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>>> listMap = new ArrayList<>();
+
+        List<ExpandableListViewChild> userWeightChildren = new ArrayList<>();
+        userWeightChildren.add(ExpandableListViewChild.USER_WEIGHT);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userWeightEntry = new Tuple<>(ExpandableListViewGroup.USER_WEIGHT, userWeightChildren);
+        listMap.add(userWeightEntry);
+
+        List<ExpandableListViewChild> userHeightChildren = new ArrayList<>();
+        userHeightChildren.add(ExpandableListViewChild.USER_HEIGHT);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userHeightEntry = new Tuple<>(ExpandableListViewGroup.USER_HEIGHT, userHeightChildren);
+        listMap.add(userHeightEntry);
+
+        listAdapter = new UserPropertiesExpandableListAdapter(this, listMap);
+        expListView.setAdapter(listAdapter);
     }
 }

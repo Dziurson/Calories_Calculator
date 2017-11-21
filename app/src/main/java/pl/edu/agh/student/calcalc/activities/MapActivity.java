@@ -118,7 +118,7 @@ public class MapActivity extends AppCompatActivity
         } else if (id == R.id.dmi_map) {
 
         } else if (id == R.id.dmi_properties) {
-            ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
+            ActivityHelper.findOrCreateActivity(this,UserPropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {

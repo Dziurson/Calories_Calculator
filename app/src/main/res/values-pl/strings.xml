@@ -28,4 +28,7 @@
     <string name="output_file_type">Typ Pliku Wyjściowego</string>
     <string name="map_points">Częstotliwość aktualizacji punktów</string>
     <string name="no_points">Bez punktów</string>
+    <string name="map_shown">Pokaż mapę</string>
+    <string name="user_weight">Waga</string>
+    <string name="user_height">Wzrost</string>
 </resources>

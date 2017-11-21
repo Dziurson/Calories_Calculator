@@ -5,11 +5,11 @@ import android.app.Activity;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 
-public class MapPointInteger implements IPropertyWithResource {
+public class PropertyInteger implements IPropertyWithResource {
 
     int value;
 
-    public MapPointInteger(int value) {
+    public PropertyInteger(int value) {
         this.value = value;
     }
     @Override

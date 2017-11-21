@@ -30,4 +30,9 @@
     <string name="gpx_filetype">.gpx</string>
     <string name="map_points">Map Points</string>
     <string name="no_points">No points</string>
+    <string name="map_shown">Show map</string>
+    <string name="user_weight">Weight</string>
+    <string name="user_height">Height</string>
+    <string name="kilogram_unit">kg</string>
+    <string name="centimeter_unit">cm</string>
 </resources>

@@ -1,14 +1,12 @@
 package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
-import android.content.res.Configuration;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.util.DisplayMetrics;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,13 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -34,6 +32,7 @@ import java.util.Locale;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
+import pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
@@ -63,41 +62,42 @@ public class MainActivity extends AppCompatActivity
     private TextView latitudeTextView;
     private TextView altitudeTextView;
     private TextView velocityTextView;
-    private SupportMapFragment googleMapFragment;
+    private CheckBox showMapCheckBox;
+    private CustomSupportMapFragment googleMapFragment;
     private GoogleMap googleMap;
     private Location lastLocation;
     private CustomScrollView mainActivityScrollView;
     private int pointToDrawMarker = 0;
-
+    private Toolbar toolbar;
+    DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //Sets global reference to MainActivity
         Properties.mainActivity = this;
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        durationTimer = new Timer(null, this);
-        startActivityButton = (FloatingActionButton) findViewById(R.id.fabRun);
-        pauseActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabPause);
-        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        locationListener = ApplicationLocationListener.getInstance();
-        locationListener.addOnLocationChangedCommand(this);
-        mainActivityScrollView = (CustomScrollView) findViewById(R.id.main_activity_scroll_view);
+        //Initialization of Layout
+        InitializeLayout();
+
+        //Initialization of Map
+        initializeMap();
+
+        //Initialization of Fields
+        initializeFields();
 
         setSupportActionBar(toolbar);
-        initializeMap();
-        initializeTextViews();
+
+        //Initialization of Listeners
         initializeListeners();
+
         setDefaults();
 
         durationTimer.setTextViewToUpdate(timerTextView);
         mainActivityScrollView.enableTouchForView(googleMapFragment.getView());
-
-
-
+        showMapCheckBox.setChecked(UserSettings.isMapVisibleOnStartup);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -108,29 +108,8 @@ public class MainActivity extends AppCompatActivity
     protected void onResume() {
         navSideMenu.setCheckedItem(R.id.dmi_home);
         super.onResume();
-        onRotate();
-    }
-
-    private void onRotate() {
-        if(googleMapFragment != null) {
-            DisplayMetrics metrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            View mapView = googleMapFragment.getView();
-            ViewGroup.LayoutParams mapParams = mapView.getLayoutParams();
-            switch (getResources().getConfiguration().orientation) {
-                case Configuration.ORIENTATION_LANDSCAPE:
-                    if (mapParams != null) {
-                        mapParams.height = (int) Math.ceil(150 * metrics.density);
-                        mapView.setLayoutParams(mapParams);
-                    }
-                    break;
-                case Configuration.ORIENTATION_PORTRAIT:
-                    if (mapParams != null) {
-                        mapParams.height = (int) Math.ceil(300 * metrics.density);
-                        mapView.setLayoutParams(mapParams);
-                    }
-                    break;
-            }
+        if(googleMapFragment != null && showMapCheckBox != null) {
+            googleMapFragment.reloadDimensions(showMapCheckBox.isChecked());
         }
     }
 
@@ -174,7 +153,7 @@ public class MainActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         }
         else if (id == R.id.dmi_properties) {
-            ActivityHelper.findOrCreateActivity(this,PropertiesActivity.class);
+            ActivityHelper.findOrCreateActivity(this,UserPropertiesActivity.class);
         }
         else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
@@ -236,7 +215,88 @@ public class MainActivity extends AppCompatActivity
         pointToDrawMarker--;
     }
 
+    private void setDefaults(){
+        if(locationListener.isGPSEnabled()) {
+            setGPSStateLabel(LocationServiceState.GPS_STATE_ENABLED);
+        }
+        else {
+            setGPSStateLabel(LocationServiceState.GPS_STATE_DISABLED);
+        }
+    }
+
+    private void pauseTracking(View view) {
+        durationTimer.pause();
+        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_start);
+    }
+
+    private void startTracking(View view) {
+        gpxSerializer = new FileSerializer(this);
+        if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
+            durationTimer.start();
+            Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
+            startActivityButton.setImageResource(R.drawable.ic_icon_stop);
+            pauseActivityButton.setVisibility(View.VISIBLE);
+        }
+}
+
+    private void stopTracking(View view) {
+        durationTimer.stop();
+        Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
+        startActivityButton.setImageResource(R.drawable.ic_icon_start);
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
+        pauseActivityButton.setVisibility(View.INVISIBLE);
+        gpxSerializer.stop();
+    }
+
+    private void resumeTracking(View view) {
+        durationTimer.resume();
+        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
+        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
+    }
+
+    private void setGPSStateLabel(LocationServiceState state) {
+        switch (state){
+            case GPS_STATE_ENABLED:
+                gpsStateTextView.setText(R.string.gps_enabled);
+                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorGreen));
+                break;
+            case GPS_STATE_DISABLED:
+                gpsStateTextView.setText(R.string.gps_disabled);
+                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorRed));
+                break;
+        }
+    }
+
+    private void initializeFields() {
+        durationTimer = new Timer(null, this);
+        locationListener = ApplicationLocationListener.getInstance();
+    }
+
+    private void InitializeLayout() {
+        gpsStateTextView = (TextView) findViewById(R.id.main_activity_gps_state);
+        timerTextView = (TextView) findViewById(R.id.main_activity_timer);
+        longitudeTextView = (TextView) findViewById(R.id.main_activity_longitude);
+        latitudeTextView = (TextView) findViewById(R.id.main_activity_latitude);
+        altitudeTextView = (TextView) findViewById(R.id.main_activity_altitude);
+        velocityTextView = (TextView) findViewById(R.id.main_activity_velocity);
+        startActivityButton = (FloatingActionButton) findViewById(R.id.fabRun);
+        pauseActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabPause);
+        mainActivityScrollView = (CustomScrollView) findViewById(R.id.main_activity_scroll_view);
+        showMapCheckBox = (CheckBox) findViewById(R.id.main_activity_check_box);
+        googleMapFragment = (CustomSupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.main_activity_map);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        navSideMenu = (NavigationView) findViewById(R.id.nav_view);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+    }
+
+    private void initializeMap() {
+        googleMapFragment.setContext(this);
+        googleMapFragment.getMapAsync(this);
+    }
+
     private void initializeListeners() {
+        locationListener.addOnLocationChangedCommand(this);
         startActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -302,73 +362,13 @@ public class MainActivity extends AppCompatActivity
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},Properties.PERMISSION_TO_ACCESS_FINE_LOCATION);
         }
 
-
-    }
-
-    private void setDefaults(){
-        if(locationListener.isGPSEnabled()) {
-            setGPSStateLabel(LocationServiceState.GPS_STATE_ENABLED);
-        }
-        else {
-            setGPSStateLabel(LocationServiceState.GPS_STATE_DISABLED);
-        }
-    }
-
-    private void pauseTracking(View view) {
-        durationTimer.pause();
-        Snackbar.make(view, R.string.tracking_paused, Snackbar.LENGTH_SHORT).show();
-        pauseActivityButton.setImageResource(R.drawable.ic_icon_start);
-    }
-
-    private void startTracking(View view) {
-        gpxSerializer = new FileSerializer(this);
-        if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
-            durationTimer.start();
-            Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
-            startActivityButton.setImageResource(R.drawable.ic_icon_stop);
-            pauseActivityButton.setVisibility(View.VISIBLE);
-        }
-}
-
-    private void stopTracking(View view) {
-        durationTimer.stop();
-        Snackbar.make(view, R.string.tracking_finished, Snackbar.LENGTH_SHORT).show();
-        startActivityButton.setImageResource(R.drawable.ic_icon_start);
-        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
-        pauseActivityButton.setVisibility(View.INVISIBLE);
-        gpxSerializer.stop();
-    }
-
-    private void resumeTracking(View view) {
-        durationTimer.resume();
-        Snackbar.make(view, R.string.tracking_resumed, Snackbar.LENGTH_SHORT).show();
-        pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
-    }
-
-    private void setGPSStateLabel(LocationServiceState state) {
-        switch (state){
-            case GPS_STATE_ENABLED:
-                gpsStateTextView.setText(R.string.gps_enabled);
-                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorGreen));
-                break;
-            case GPS_STATE_DISABLED:
-                gpsStateTextView.setText(R.string.gps_disabled);
-                gpsStateTextView.setTextColor(getResources().getColor(R.color.colorRed));
-                break;
-        }
-    }
-
-    private void initializeTextViews() {
-        gpsStateTextView = (TextView) findViewById(R.id.main_activity_gps_state);
-        timerTextView = (TextView) findViewById(R.id.main_activity_timer);
-        longitudeTextView = (TextView) findViewById(R.id.main_activity_longitude);
-        latitudeTextView = (TextView) findViewById(R.id.main_activity_latitude);
-        altitudeTextView = (TextView) findViewById(R.id.main_activity_altitude);
-        velocityTextView = (TextView) findViewById(R.id.main_activity_velocity);
-    }
-
-    private void initializeMap() {
-        googleMapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.main_activity_map);
-        googleMapFragment.getMapAsync(this);
+        showMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(googleMapFragment != null && showMapCheckBox != null) {
+                    googleMapFragment.reloadDimensions(showMapCheckBox.isChecked());
+                }
+            }
+        });
     }
 }

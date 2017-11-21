@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/main_activity_gps_state"
@@ -36,20 +37,46 @@
         android:textAlignment="center"
         android:text="@string/default_timer_value" />
 
-    <TextView
-        android:id="@+id/main_activity_location_label"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/location_label"
-        android:layout_marginStart="30dp"
-        android:textSize="12sp" />
+        android:layout_marginEnd="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/main_activity_location_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:text="@string/location_label"
+            android:layout_weight="1"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/main_activity_map_check_box_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="@string/map_shown"
+            android:textAlignment="textEnd"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/main_activity_check_box"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.7"
+            android:textAlignment="textEnd" />
+    </LinearLayout>
 
     <fragment
         android:id="@+id/main_activity_map"
         android:name="com.google.android.gms.maps.MapFragment"
+        class="pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_marginTop="8dp"
         tools:layout="@android:layout/simple_gallery_item" />
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"

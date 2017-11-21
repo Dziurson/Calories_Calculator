@@ -150,13 +150,13 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
     private View mapPointsChildInit(ViewGroup parent) {
         View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_map_points, null);
         final SeekBar mapPointsSeekBar = (SeekBar) convertView.findViewById(R.id.settings_expandable_list_map_points);
-        final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_map_points_value);
+        final TextView headerValueTextView = (TextView) parent.findViewById(R.id.settings_group_map_points_value);
         mapPointsSeekBar.setProgress(UserSettings.delayBetweenPoints.getValue());
         mapPointsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 UserSettings.delayBetweenPoints.setValue(progress);
-                headerTextView.setText(UserSettings.delayBetweenPoints.getString(context));
+                headerValueTextView.setText(UserSettings.delayBetweenPoints.getString(context));
             }
 
             @Override
