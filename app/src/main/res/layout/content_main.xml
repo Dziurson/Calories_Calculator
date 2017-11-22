@@ -8,14 +8,11 @@
     tools:context="pl.edu.agh.student.calcalc.activities.MainActivity"
     tools:showIn="@layout/app_bar_main">
 
-    <ScrollView
+    <pl.edu.agh.student.calcalc.controls.CustomScrollView
+        android:id="@+id/main_activity_scroll_view"
         android:fillViewport="true"
-        android:layout_width="384dp"
-        android:layout_height="511dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -23,5 +20,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
         <include layout="@layout/content_scroll_view_main" />
-    </ScrollView>
+    </pl.edu.agh.student.calcalc.controls.CustomScrollView>
 </android.support.constraint.ConstraintLayout>

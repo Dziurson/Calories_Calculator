@@ -26,4 +26,13 @@
     <string name="title_activity_properties">Właściwości</string>
     <string name="title_activity_map">Mapa</string>
     <string name="output_file_type">Typ Pliku Wyjściowego</string>
+    <string name="map_points">Częstotliwość aktualizacji punktów</string>
+    <string name="no_points">Bez punktów</string>
+    <string name="map_shown">Pokaż mapę</string>
+    <string name="user_weight">Waga</string>
+    <string name="user_height">Wzrost</string>
+    <string name="user_age">Wiek</string>
+    <string name="user_gender">Płeć</string>
+    <string name="gender_male">Mężczyzna</string>
+    <string name="gender_female">Kobieta</string>
 </resources>

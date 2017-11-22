@@ -35,7 +35,7 @@
                 android:value="pl.edu.agh.student.calcalc.activities.MainActivity" />
         </activity>
         <activity
-            android:name=".activities.PropertiesActivity"
+            android:name=".activities.UserPropertiesActivity"
             android:label="@string/title_activity_properties"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

@@ -11,57 +11,53 @@ import android.view.View;
 import pl.edu.agh.student.calcalc.helpers.BooleanHelper;
 import pl.edu.agh.student.calcalc.helpers.IntegerHelper;
 
-/**
- * Created by jakub on 18.10.2017.
- */
+public class CustomFloatingActionButton extends FloatingActionButton {
 
-public class AnimatedFloatingActionButton extends FloatingActionButton {
+    private int animationDuration;
+    private boolean animationEnabled;
 
-    private int mAnimationDuration;
-    private boolean mAnimationEnabled;
-
-    public AnimatedFloatingActionButton(Context context) {
+    public CustomFloatingActionButton(Context context) {
         super(context);
     }
 
-    public AnimatedFloatingActionButton(Context context, AttributeSet attrs) {
+    public CustomFloatingActionButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         initializeCustomAttributes(attrs);
     }
 
-    public AnimatedFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomFloatingActionButton(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initializeCustomAttributes(attrs);
     }
 
     private void initializeCustomAttributes(AttributeSet attrs){
-        String sNamespace = "http://schemas.android.com/apk/res-auto";
-        mAnimationEnabled = BooleanHelper.tryParse(attrs.getAttributeValue(sNamespace,"animation_enabled"),false);
-        mAnimationDuration = (mAnimationEnabled) ? IntegerHelper.tryParse(attrs.getAttributeValue(sNamespace,"animation_duration"),500) : 0;
+        String controlNamespace = "http://schemas.android.com/apk/res-auto";
+        animationEnabled = BooleanHelper.tryParse(attrs.getAttributeValue(controlNamespace,"animation_enabled"),false);
+        animationDuration = (animationEnabled) ? IntegerHelper.tryParse(attrs.getAttributeValue(controlNamespace,"animation_duration"),500) : 0;
     }
 
     @Override
     protected void onVisibilityChanged(@NonNull final View changedView, final int visibility) {
         if(visibility == VISIBLE) {
-            this.animate().alpha(1.0f).setDuration(mAnimationDuration).setListener(new AnimatorListenerAdapter(){
+            this.animate().alpha(1.0f).setDuration(animationDuration).setListener(new AnimatorListenerAdapter(){
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    AnimatedFloatingActionButton.super.onVisibilityChanged(changedView, visibility);
+                    CustomFloatingActionButton.super.onVisibilityChanged(changedView, visibility);
                 }
             });
         }
-        else AnimatedFloatingActionButton.super.onVisibilityChanged(changedView,visibility);
+        else CustomFloatingActionButton.super.onVisibilityChanged(changedView,visibility);
     }
 
     @Override
     public void setVisibility(final int visibility) {
         if(visibility == INVISIBLE) {
-            this.animate().alpha(0.0f).setDuration(mAnimationDuration).setListener(new AnimatorListenerAdapter(){
+            this.animate().alpha(0.0f).setDuration(animationDuration).setListener(new AnimatorListenerAdapter(){
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    AnimatedFloatingActionButton.super.setVisibility(visibility);
+                    CustomFloatingActionButton.super.setVisibility(visibility);
                 }
             });
         }

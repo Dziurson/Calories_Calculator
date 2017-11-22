@@ -10,32 +10,32 @@ import android.widget.ScrollView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ScrollViewTouchEnabled extends ScrollView {
-    List<View> alvTouchEnabledViews = new ArrayList<>();
+public class CustomScrollView extends ScrollView {
+    List<View> touchEnabledViews = new ArrayList<>();
 
-    public ScrollViewTouchEnabled(Context context) {
+    public CustomScrollView(Context context) {
         super(context);
     }
 
-    public ScrollViewTouchEnabled(Context context, AttributeSet attrs) {
+    public CustomScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public ScrollViewTouchEnabled(Context context, AttributeSet attrs, int defStyleAttr) {
+    public CustomScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
-    public ScrollViewTouchEnabled(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public CustomScrollView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     public <T extends View> void enableTouchForView(T view) {
-        alvTouchEnabledViews.add(view);
+        touchEnabledViews.add(view);
     }
 
     public <T extends View> boolean disableTouchForView(T view) {
-        if(alvTouchEnabledViews.contains(view)) {
-            alvTouchEnabledViews.remove(view);
+        if(touchEnabledViews.contains(view)) {
+            touchEnabledViews.remove(view);
             return true;
         }
         return false;
@@ -43,12 +43,12 @@ public class ScrollViewTouchEnabled extends ScrollView {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
-        if (alvTouchEnabledViews.size() > 0) {
+        if (touchEnabledViews.size() > 0) {
             int x = (int) event.getX();
             int y = (int) event.getY() + getScrollY();
             Rect bounds = new Rect();
 
-            for (View view : alvTouchEnabledViews) {
+            for (View view : touchEnabledViews) {
                 view.getHitRect(bounds);
                 if (bounds.contains(x, y)) {
                     return false;

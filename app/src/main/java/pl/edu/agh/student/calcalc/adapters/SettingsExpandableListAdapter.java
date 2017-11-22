@@ -1,41 +1,45 @@
 package pl.edu.agh.student.calcalc.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
-import pl.edu.agh.student.calcalc.containers.Tuple;
+import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomButton;
-import pl.edu.agh.student.calcalc.enums.ExpandableListChildType;
-import pl.edu.agh.student.calcalc.enums.ExpandableListGroupType;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
+import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
 import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
-import pl.edu.agh.student.calcalc.enums.VelocityType;
+import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
-import pl.edu.agh.student.calcalc.interfaces.IProperty;
+import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 
 public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
     LayoutInflater layoutFactory = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-    public SettingsExpandableListAdapter(Activity context, List<Tuple<ExpandableListGroupType,List<ExpandableListChildType>>> initializationList) {
+    public SettingsExpandableListAdapter(FragmentActivity context, List<Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>>> initializationList) {
         super(context,initializationList);
     }
 
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-        switch ((ExpandableListGroupType) getGroup(groupPosition)) {
+        switch ((ExpandableListViewGroup) getGroup(groupPosition)) {
             case EXPORT_FILE_TYPE:
-                convertView = groupInit(ExpandableListGroupType.EXPORT_FILE_TYPE,UserSettings.exportFileFormat);
+                convertView = groupInit(ExpandableListViewGroup.EXPORT_FILE_TYPE,UserSettings.exportFileFormat);
                 break;
             case VELOCITY_UNITS:
-                convertView = groupInit(ExpandableListGroupType.VELOCITY_UNITS,UserSettings.usedVelocity);
+                convertView = groupInit(ExpandableListViewGroup.VELOCITY_UNITS,UserSettings.usedVelocity);
+                break;
+            case MAP_POINTS:
+                convertView = groupInit(ExpandableListViewGroup.MAP_POINTS,UserSettings.delayBetweenPoints);
                 break;
         }
         return convertView;
@@ -43,12 +47,15 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
 
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-        switch((ExpandableListChildType) getChild(groupPosition, childPosition)) {
+        switch((ExpandableListViewChild) getChild(groupPosition, childPosition)) {
             case FILE_TYPE:
                 convertView = fileTypeChildInit(parent);
                 break;
             case VELOCITY_UNITS:
                 convertView = velocityUnitChildInit(parent);
+                break;
+            case MAP_POINTS:
+                convertView = mapPointsChildInit(parent);
                 break;
         }
         return convertView;
@@ -71,26 +78,26 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                 metersPerSecondButton.setButtonSelected(false);
                 break;
         }
-        headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+        headerTextView.setText(UserSettings.usedVelocity.getString(context));
         metersPerSecondButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_MPS)) {
+                if(!(UserSettings.usedVelocity == VelocityUnit.VELOCITY_IN_MPS)) {
                     metersPerSecondButton.setButtonSelected(true);
                     kilometersPerHourButton.setButtonSelected(false);
-                    UserSettings.usedVelocity = VelocityType.VELOCITY_IN_MPS;
-                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+                    UserSettings.usedVelocity = VelocityUnit.VELOCITY_IN_MPS;
+                    headerTextView.setText(UserSettings.usedVelocity.getString(context));
                 }
             }
         });
         kilometersPerHourButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!(UserSettings.usedVelocity == VelocityType.VELOCITY_IN_KPH)) {
+                if(!(UserSettings.usedVelocity == VelocityUnit.VELOCITY_IN_KPH)) {
                     kilometersPerHourButton.setButtonSelected(true);
                     metersPerSecondButton.setButtonSelected(false);
-                    UserSettings.usedVelocity = VelocityType.VELOCITY_IN_KPH;
-                    headerTextView.setText(context.getString(UserSettings.usedVelocity.getStringResourceId()));
+                    UserSettings.usedVelocity = VelocityUnit.VELOCITY_IN_KPH;
+                    headerTextView.setText(UserSettings.usedVelocity.getString(context));
                 }
             }
         });
@@ -114,7 +121,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                 kmlFileTypeButton.setButtonSelected(false);
                 break;
         }
-        headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
         gpxFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -122,7 +129,7 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     gpxFileTypeButton.setButtonSelected(true);
                     kmlFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
                 }
             }
         });
@@ -133,18 +140,43 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
                     kmlFileTypeButton.setButtonSelected(true);
                     gpxFileTypeButton.setButtonSelected(false);
                     UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerTextView.setText(context.getString(UserSettings.exportFileFormat.getStringResourceId()));
+                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
                 }
             }
         });
         return convertView;
     }
 
-    private View groupInit(ExpandableListGroupType groupType, IProperty propertyToUpdate){
+    private View mapPointsChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_map_points, null);
+        final SeekBar mapPointsSeekBar = (SeekBar) convertView.findViewById(R.id.settings_expandable_list_map_points);
+        final TextView headerValueTextView = (TextView) parent.findViewById(R.id.settings_group_map_points_value);
+        mapPointsSeekBar.setProgress(UserSettings.delayBetweenPoints.getValue());
+        mapPointsSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                UserSettings.delayBetweenPoints.setValue(progress);
+                headerValueTextView.setText(UserSettings.delayBetweenPoints.getString(context));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        return convertView;
+    }
+
+    private View groupInit(ExpandableListViewGroup groupType, IPropertyWithResource propertyToUpdate){
         View convertView = layoutFactory.inflate(groupType.layoutResourceId,null);
         if(groupType.valueResourceId != -1) {
             TextView headerValueTextView = (TextView) convertView.findViewById(groupType.valueResourceId);
-            headerValueTextView.setText(context.getString(propertyToUpdate.getStringResourceId()));
+            headerValueTextView.setText(propertyToUpdate.getString(context));
         }
         TextView headerKeyTextView = (TextView) convertView.findViewById(groupType.headerResourceId);
         headerKeyTextView.setTypeface(null, Typeface.BOLD);

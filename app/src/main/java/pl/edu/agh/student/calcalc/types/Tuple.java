@@ -1,4 +1,4 @@
-package pl.edu.agh.student.calcalc.containers;
+package pl.edu.agh.student.calcalc.types;
 
 public class Tuple<T1,T2> {
     public T1 first;

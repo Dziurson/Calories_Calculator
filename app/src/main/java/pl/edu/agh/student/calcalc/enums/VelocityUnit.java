@@ -5,13 +5,13 @@ import android.app.Activity;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 
-public enum OutputFileFormat implements IPropertyWithResource {
-    KML(R.string.kml_filetype),
-    GPX(R.string.gpx_filetype);
+public enum VelocityUnit implements IPropertyWithResource {
+    VELOCITY_IN_MPS(R.string.meters_per_second),
+    VELOCITY_IN_KPH(R.string.kilometers_per_hour);
 
     private final int stringResourceId;
 
-    OutputFileFormat(int stringResourceId) {
+    VelocityUnit(int stringResourceId) {
         this.stringResourceId = stringResourceId;
     }
 

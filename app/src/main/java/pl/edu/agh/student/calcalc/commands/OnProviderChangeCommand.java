@@ -1,5 +1,5 @@
 package pl.edu.agh.student.calcalc.commands;
 
-public interface ProviderChangeCommand {
+public interface OnProviderChangeCommand {
     void execute(boolean isGPSEnabled);
 }
