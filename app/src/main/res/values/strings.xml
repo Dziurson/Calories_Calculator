@@ -35,4 +35,8 @@
     <string name="user_height">Height</string>
     <string name="kilogram_unit">kg</string>
     <string name="centimeter_unit">cm</string>
+    <string name="user_age">Age</string>
+    <string name="user_gender">Gender</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
 </resources>

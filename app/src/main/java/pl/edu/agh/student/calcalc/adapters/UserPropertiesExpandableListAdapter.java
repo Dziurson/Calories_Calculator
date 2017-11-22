@@ -12,7 +12,9 @@ import android.widget.TextView;
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.controls.CustomSeekBar;
+import pl.edu.agh.student.calcalc.enums.UserGender;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 import pl.edu.agh.student.calcalc.types.Tuple;
@@ -38,6 +40,12 @@ public class UserPropertiesExpandableListAdapter extends CustomExpandableListAda
             case USER_HEIGHT:
                 convertView = groupInit(ExpandableListViewGroup.USER_HEIGHT, UserSettings.userHeight);
                 break;
+            case USER_AGE:
+                convertView = groupInit(ExpandableListViewGroup.USER_AGE,UserSettings.userAge);
+                break;
+            case USER_GENDER:
+                convertView = groupInit(ExpandableListViewGroup.USER_GENDER,UserSettings.userGender);
+                break;
         }
         return convertView;
     }
@@ -50,9 +58,17 @@ public class UserPropertiesExpandableListAdapter extends CustomExpandableListAda
                 break;
             case USER_HEIGHT:
                 convertView = userHeightChildInit(parent);
+                break;
+            case USER_AGE:
+                convertView = userAgeChildInit(parent);
+                break;
+            case USER_GENDER:
+                convertView = userGenderChildInit(parent);
+                break;
         }
         return convertView;
     }
+
 
     private View userWeightChildInit(ViewGroup parent) {
         View convertView = layoutFactory.inflate(R.layout.user_properties_expandable_list_child_user_weight, null);
@@ -125,4 +141,73 @@ public class UserPropertiesExpandableListAdapter extends CustomExpandableListAda
         });
         return convertView;
     }
+
+    private View userAgeChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.user_properties_expandable_list_child_user_age, null);
+        final SeekBar userAgeSeekBar = (CustomSeekBar) convertView.findViewById(R.id.user_properties_expandable_list_user_age);
+        final TextView headerValueTextView = (TextView) parent.findViewById(R.id.user_properties_group_user_age_value);
+        userAgeSeekBar.setProgress(UserSettings.userAge.getValue());
+        userAgeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                UserSettings.userAge.setValue(progress);
+                headerValueTextView.setText(UserSettings.userAge.getString(context));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        return convertView;
+    }
+
+    private View userGenderChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.user_properties_expandable_list_child_user_gender, null);
+        final CustomButton genderMaleButton = (CustomButton) convertView.findViewById(R.id.user_properties_expandable_list_user_gender_male);
+        final CustomButton genderFemaleButton = (CustomButton) convertView.findViewById(R.id.user_properties_expandable_list_user_gender_female);
+        genderMaleButton.setFocusable(false);
+        genderFemaleButton.setFocusable(false);
+        final TextView headerTextView = (TextView) parent.findViewById(R.id.user_properties_group_user_gender_value);
+        switch(UserSettings.userGender) {
+            case GENDER_MALE:
+                genderMaleButton.setButtonSelected(true);
+                genderFemaleButton.setButtonSelected(false);
+                break;
+            case GENDER_FEMALE:
+                genderFemaleButton.setButtonSelected(true);
+                genderMaleButton.setButtonSelected(false);
+                break;
+        }
+        headerTextView.setText(UserSettings.userGender.getString(context));
+        genderMaleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!(UserSettings.userGender == UserGender.GENDER_MALE)) {
+                    genderMaleButton.setButtonSelected(true);
+                    genderFemaleButton.setButtonSelected(false);
+                    UserSettings.userGender = UserGender.GENDER_MALE;
+                    headerTextView.setText(UserSettings.userGender.getString(context));
+                }
+            }
+        });
+        genderFemaleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!(UserSettings.userGender == UserGender.GENDER_FEMALE)) {
+                    genderFemaleButton.setButtonSelected(true);
+                    genderMaleButton.setButtonSelected(false);
+                    UserSettings.userGender = UserGender.GENDER_FEMALE;
+                    headerTextView.setText(UserSettings.userGender.getString(context));
+                }
+            }
+        });
+        return convertView;
+    }
+
 }

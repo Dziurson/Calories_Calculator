@@ -126,6 +126,16 @@ public class UserPropertiesActivity extends AppCompatActivity
         Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userHeightEntry = new Tuple<>(ExpandableListViewGroup.USER_HEIGHT, userHeightChildren);
         listMap.add(userHeightEntry);
 
+        List<ExpandableListViewChild> userAgeChildren = new ArrayList<>();
+        userAgeChildren.add(ExpandableListViewChild.USER_AGE);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userAgeEntry = new Tuple<>(ExpandableListViewGroup.USER_AGE, userAgeChildren);
+        listMap.add(userAgeEntry);
+
+        List<ExpandableListViewChild> userGenderChildren = new ArrayList<>();
+        userGenderChildren.add(ExpandableListViewChild.USER_GENDER);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userGenderEntry = new Tuple<>(ExpandableListViewGroup.USER_GENDER, userGenderChildren);
+        listMap.add(userGenderEntry);
+
         listAdapter = new UserPropertiesExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
     }

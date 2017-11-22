@@ -5,7 +5,7 @@ public enum ExpandableListViewChild {
     USER_AGE,
     USER_WEIGHT,
     USER_HEIGHT,
-    USER_SEX,
+    USER_GENDER,
     VELOCITY_UNITS,
     MAP_POINTS
 }
