@@ -8,10 +8,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.activities.MainActivity;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
@@ -125,22 +127,32 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         gpxFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
-                    gpxFileTypeButton.setButtonSelected(true);
-                    kmlFileTypeButton.setButtonSelected(false);
-                    UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                if(!MainActivity.isTrackingActive) {
+                    if (!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
+                        gpxFileTypeButton.setButtonSelected(true);
+                        kmlFileTypeButton.setButtonSelected(false);
+                        UserSettings.exportFileFormat = OutputFileFormat.GPX;
+                        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                    }
+                }
+                else {
+                    Toast.makeText(context,context.getString(R.string.file_type_change_not_allowed),Toast.LENGTH_SHORT).show();
                 }
             }
         });
         kmlFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
-                    kmlFileTypeButton.setButtonSelected(true);
-                    gpxFileTypeButton.setButtonSelected(false);
-                    UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                if(!MainActivity.isTrackingActive) {
+                    if (!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
+                        kmlFileTypeButton.setButtonSelected(true);
+                        gpxFileTypeButton.setButtonSelected(false);
+                        UserSettings.exportFileFormat = OutputFileFormat.KML;
+                        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                    }
+                }
+                else {
+                    Toast.makeText(context,context.getString(R.string.file_type_change_not_allowed),Toast.LENGTH_SHORT).show();
                 }
             }
         });

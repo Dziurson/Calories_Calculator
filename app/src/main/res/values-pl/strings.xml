@@ -35,4 +35,5 @@
     <string name="user_gender">Płeć</string>
     <string name="gender_male">Mężczyzna</string>
     <string name="gender_female">Kobieta</string>
+    <string name="file_type_change_not_allowed">Zmiana typu pliku nie jest możliwa podczas trwania aktywności.</string>
 </resources>

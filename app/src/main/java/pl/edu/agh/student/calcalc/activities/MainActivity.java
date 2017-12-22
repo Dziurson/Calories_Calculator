@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -71,6 +72,8 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     DrawerLayout drawer;
 
+    public static boolean isTrackingActive = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         durationTimer.setTextViewToUpdate(timerTextView);
         mainActivityScrollView.enableTouchForView(googleMapFragment.getView());
         showMapCheckBox.setChecked(UserSettings.isMapVisibleOnStartup);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -183,6 +187,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
+            }
+        });
     }
 
     @Override
@@ -200,7 +215,7 @@ public class MainActivity extends AppCompatActivity
         }
         if(googleMap != null) {
             if(pointToDrawMarker <= 0 && UserSettings.delayBetweenPoints.getValue() != 0) {
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("TEST").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
+                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Test").snippet("test\n\rtest\n\r").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
                 pointToDrawMarker = UserSettings.delayBetweenPoints.getValue();
             }
             if(lastLocation != null) {
@@ -237,6 +252,7 @@ public class MainActivity extends AppCompatActivity
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
             startActivityButton.setImageResource(R.drawable.ic_icon_stop);
             pauseActivityButton.setVisibility(View.VISIBLE);
+            isTrackingActive = true;
         }
 }
 
@@ -247,6 +263,7 @@ public class MainActivity extends AppCompatActivity
         pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
         pauseActivityButton.setVisibility(View.INVISIBLE);
         gpxSerializer.stop();
+        isTrackingActive = false;
     }
 
     private void resumeTracking(View view) {
