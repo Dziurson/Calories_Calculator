@@ -36,8 +36,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import org.apache.commons.io.FilenameUtils;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
@@ -147,8 +149,6 @@ public class MapActivity extends AppCompatActivity
 
         if (id == R.id.dmi_home) {
             ActivityHelper.findOrCreateActivity(this,MainActivity.class);
-        } else if (id == R.id.dmi_map) {
-
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,UserPropertiesActivity.class);
         } else if (id == R.id.dmi_settings) {
@@ -177,12 +177,25 @@ public class MapActivity extends AppCompatActivity
         switch(requestCode) {
             case ACTION_GET_CONTENT_REQUEST:
                 if(resultCode == RESULT_OK) {
-                    File selectedFile = new File(resultData.getData().getPath());
+                    String filepath = resultData.getData().getPath().replaceFirst("/file","");
+                    File selectedFile = new File(filepath);
                     String fileExtension = FilenameUtils.getExtension(selectedFile.getName());
-                    if ((fileExtension.compareToIgnoreCase("kml") == 0) || (fileExtension.compareToIgnoreCase("gpx") == 0)) {
-                        FileParser.parseFile(selectedFile,fileExtension);
-                    } else {
-                        Toast.makeText(this, this.getString(R.string.wrong_file_type_selected), Toast.LENGTH_SHORT).show();
+                    try {
+                        if (fileExtension.compareToIgnoreCase("kml") == 0) {
+                            FileParser.parseKmlFile(selectedFile);
+                        }
+                        else if (fileExtension.compareToIgnoreCase("gpx") == 0) {
+                            FileParser.parseGpxFile(selectedFile);
+                        }
+                        else {
+                            Toast.makeText(this, this.getString(R.string.wrong_file_type_selected), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    catch (XmlPullParserException e) {
+                        Toast.makeText(this, this.getString(R.string.parsing_error), Toast.LENGTH_SHORT).show();
+                    }
+                    catch (IOException e) {
+                        Toast.makeText(this, this.getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;

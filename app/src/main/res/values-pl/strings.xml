@@ -39,4 +39,6 @@
     <string name="no_sharing_app_found">Nie znaleziono żadnej aplikacji umożliwiającej udostępnianie treści.</string>
     <string name="wrong_file_type_selected">Ten plik nie zawiera żadnych danych o trasie i aktywności.</string>
     <string name="no_file_manager_installed">Nie znaleziono żadnego eksploratora plików.</string>
+    <string name="parsing_error">Wystąpił błąd podczas parsowania pliku.</string>
+    <string name="unknown_error">Coś poszło nie tak.</string>
 </resources>

@@ -101,8 +101,6 @@ public class SettingsActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
         } else if (id == R.id.dmi_properties) {
             ActivityHelper.findOrCreateActivity(this,UserPropertiesActivity.class);
-        } else if (id == R.id.dmi_share) {
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

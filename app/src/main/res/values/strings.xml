@@ -43,4 +43,6 @@
     <string name="no_sharing_app_found">There is no sharing app found.</string>
     <string name="wrong_file_type_selected">This file does not contains track or activity data.</string>
     <string name="no_file_manager_installed">File manager not found.</string>
+    <string name="parsing_error">An error occurred while parsing file.</string>
+    <string name="unknown_error">Something went wrong.</string>
 </resources>

@@ -100,12 +100,8 @@ public class UserPropertiesActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
-        } else if (id == R.id.dmi_properties) {
-
         } else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
-        } else if (id == R.id.dmi_share) {
-
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
