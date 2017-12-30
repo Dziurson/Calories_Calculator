@@ -36,7 +36,7 @@
     <string name="gender_male">Mężczyzna</string>
     <string name="gender_female">Kobieta</string>
     <string name="file_type_change_not_allowed">Zmiana typu pliku nie jest możliwa podczas trwania aktywności.</string>
-    <string name="facebook_app_not_exist">Aplikacja Facebook nie jest zainstalowana.</string>
+    <string name="no_sharing_app_found">Nie znaleziono żadnej aplikacji umożliwiającej udostępnianie treści.</string>
     <string name="wrong_file_type_selected">Ten plik nie zawiera żadnych danych o trasie i aktywności.</string>
     <string name="no_file_manager_installed">Nie znaleziono żadnego eksploratora plików.</string>
 </resources>

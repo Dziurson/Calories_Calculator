@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 
 public class FileParser {
-    public static ArrayList<Location> parseFile(File file) {
+    public static ArrayList<Location> parseFile(File file, String extension) {
         return new ArrayList<>();
     }
 }

@@ -14,7 +14,6 @@
 
 package pl.edu.agh.student.calcalc.activities;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -55,8 +54,7 @@ public class MapActivity extends AppCompatActivity
     SupportMapFragment mapGoogleMap;
     CustomScrollView msvActivityContentContainer;
     private GoogleMap googleMap;
-    Activity self;
-    Button buttonImportFile;
+    private Button buttonImportFile;
     private static final int ACTION_GET_CONTENT_REQUEST = 200;
 
     @Override
@@ -79,7 +77,6 @@ public class MapActivity extends AppCompatActivity
         mapGoogleMap.getMapAsync(this);
         msvActivityContentContainer = (CustomScrollView) findViewById(R.id.map_scroll_view);
         msvActivityContentContainer.enableTouchForView(mapGoogleMap.getView());
-        self = this;
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
@@ -159,15 +156,14 @@ public class MapActivity extends AppCompatActivity
         } else if (id == R.id.dmi_share) {
             File file = new File(getExternalStorageDirectory().getPath() + UserSettings.testDir + "test.png");
             try {
-                Intent fbIntent = new Intent();
-                fbIntent.setClassName("com.facebook.katana", "com.facebook.composer.shareintent.ImplicitShareIntentHandlerDefaultAlias");
-                fbIntent.setAction(Intent.ACTION_SEND);
-                fbIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-                fbIntent.setType("image/png");
-                fbIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(fbIntent);
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                shareIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
+                shareIntent.setType("image/png");
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(Intent.createChooser(shareIntent, "send"));
             } catch (Exception e) {
-                Toast.makeText(this,this.getString(R.string.facebook_app_not_exist),Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,this.getString(R.string.no_sharing_app_found),Toast.LENGTH_SHORT).show();
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -182,8 +178,9 @@ public class MapActivity extends AppCompatActivity
             case ACTION_GET_CONTENT_REQUEST:
                 if(resultCode == RESULT_OK) {
                     File selectedFile = new File(resultData.getData().getPath());
-                    if ((FilenameUtils.getExtension(selectedFile.getName()).compareToIgnoreCase("kml") == 0) || (FilenameUtils.getExtension(selectedFile.getName()).compareToIgnoreCase("gpx") == 0)) {
-                        FileParser.parseFile(selectedFile);
+                    String fileExtension = FilenameUtils.getExtension(selectedFile.getName());
+                    if ((fileExtension.compareToIgnoreCase("kml") == 0) || (fileExtension.compareToIgnoreCase("gpx") == 0)) {
+                        FileParser.parseFile(selectedFile,fileExtension);
                     } else {
                         Toast.makeText(this, this.getString(R.string.wrong_file_type_selected), Toast.LENGTH_SHORT).show();
                     }
