@@ -41,4 +41,6 @@
     <string name="gender_female">Female</string>
     <string name="file_type_change_not_allowed">File type change is not allowed when tracking is enabled.</string>
     <string name="facebook_app_not_exist">Facebook app is not installed.</string>
+    <string name="wrong_file_type_selected">This file does not contains track or activity data.</string>
+    <string name="no_file_manager_installed">File manager not found.</string>
 </resources>

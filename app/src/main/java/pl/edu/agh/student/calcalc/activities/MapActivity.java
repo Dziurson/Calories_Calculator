@@ -1,13 +1,11 @@
 package pl.edu.agh.student.calcalc.activities;
 
-import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,13 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
+
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 
@@ -30,6 +30,7 @@ import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.utilities.FileParser;
 
 import static android.os.Environment.getExternalStorageDirectory;
 
@@ -39,6 +40,10 @@ public class MapActivity extends AppCompatActivity
     NavigationView navSideMenu;
     SupportMapFragment mapGoogleMap;
     CustomScrollView msvActivityContentContainer;
+    private GoogleMap googleMap;
+    Activity self;
+    Button buttonImportFile;
+    private static final int ACTION_GET_CONTENT_REQUEST = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,15 +58,31 @@ public class MapActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        buttonImportFile = (Button) findViewById(R.id.import_file_button);
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
         mapGoogleMap = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map_activity_google_map);
         mapGoogleMap.getMapAsync(this);
         msvActivityContentContainer = (CustomScrollView) findViewById(R.id.map_scroll_view);
         msvActivityContentContainer.enableTouchForView(mapGoogleMap.getView());
+        self = this;
 
         StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
         StrictMode.setVmPolicy(builder.build());
+
+        buttonImportFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("file/*");
+                    startActivityForResult(intent, ACTION_GET_CONTENT_REQUEST);
+                }
+                catch (Exception e) {
+                    Toast.makeText(MapActivity.this,MapActivity.this.getString(R.string.no_file_manager_installed),Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -72,19 +93,7 @@ public class MapActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                new LatLng(47.17, 27.5699), 16));
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        googleMap.setMyLocationEnabled(true);
+        this.googleMap = googleMap;
     }
 
     @Override
@@ -150,5 +159,22 @@ public class MapActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode,
+                                 Intent resultData) {
+        switch(requestCode) {
+            case ACTION_GET_CONTENT_REQUEST:
+                if(resultCode == RESULT_OK) {
+                    File selectedFile = new File(resultData.getData().getPath());
+                    if ((FilenameUtils.getExtension(selectedFile.getName()).compareToIgnoreCase("kml") == 0) || (FilenameUtils.getExtension(selectedFile.getName()).compareToIgnoreCase("gpx") == 0)) {
+                        FileParser.parseFile(selectedFile);
+                    } else {
+                        Toast.makeText(this, this.getString(R.string.wrong_file_type_selected), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
     }
 }
