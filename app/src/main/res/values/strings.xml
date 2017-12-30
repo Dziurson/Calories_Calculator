@@ -40,4 +40,5 @@
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="file_type_change_not_allowed">File type change is not allowed when tracking is enabled.</string>
+    <string name="facebook_app_not_exist">Facebook app is not installed.</string>
 </resources>

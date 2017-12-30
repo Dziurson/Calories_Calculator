@@ -28,6 +28,7 @@ public class SettingsActivity extends AppCompatActivity
     NavigationView navSideMenu;
     SettingsExpandableListAdapter listAdapter;
     ExpandableListView expListView;
+    MenuItem socialGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +46,8 @@ public class SettingsActivity extends AppCompatActivity
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
 
+        MenuItem item = navSideMenu.getMenu().getItem(4);
+        item.setVisible(false);
         prepareExpandableList();
     }
 
@@ -100,10 +103,7 @@ public class SettingsActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,UserPropertiesActivity.class);
         } else if (id == R.id.dmi_share) {
 
-        } else if (id == R.id.dmi_send) {
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

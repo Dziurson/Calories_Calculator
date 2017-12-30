@@ -1,8 +1,11 @@
 package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -19,6 +22,7 @@ import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,6 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.File;
 import java.util.Locale;
 
 import pl.edu.agh.student.calcalc.R;
@@ -47,6 +52,8 @@ import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
 import pl.edu.agh.student.calcalc.commands.OnProviderChangeCommand;
 import pl.edu.agh.student.calcalc.utilities.FileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback, OnLocationChangeCommand {
@@ -106,6 +113,9 @@ public class MainActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
     @Override
@@ -163,10 +173,18 @@ public class MainActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         }
         else if (id == R.id.dmi_share) {
-
-        }
-        else if (id == R.id.dmi_send) {
-
+            File file = new File(getExternalStorageDirectory().getPath() + UserSettings.testDir + "test.png");
+            try {
+                Intent fbIntent = new Intent();
+                fbIntent.setClassName("com.facebook.katana", "com.facebook.composer.shareintent.ImplicitShareIntentHandlerDefaultAlias");
+                fbIntent.setAction(Intent.ACTION_SEND);
+                fbIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
+                fbIntent.setType("image/png");
+                fbIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(fbIntent);
+            } catch (Exception e) {
+                Toast.makeText(this,this.getString(R.string.facebook_app_not_exist),Toast.LENGTH_SHORT).show();
+            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

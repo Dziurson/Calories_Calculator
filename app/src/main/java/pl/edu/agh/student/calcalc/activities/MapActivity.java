@@ -1,8 +1,11 @@
 package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.design.widget.NavigationView;
@@ -13,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,9 +24,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 
+import java.io.File;
+
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
+import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class MapActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -50,6 +59,9 @@ public class MapActivity extends AppCompatActivity
         mapGoogleMap.getMapAsync(this);
         msvActivityContentContainer = (CustomScrollView) findViewById(R.id.map_scroll_view);
         msvActivityContentContainer.enableTouchForView(mapGoogleMap.getView());
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
     }
 
     @Override
@@ -122,11 +134,19 @@ public class MapActivity extends AppCompatActivity
         } else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
-
-        } else if (id == R.id.dmi_send) {
-
+            File file = new File(getExternalStorageDirectory().getPath() + UserSettings.testDir + "test.png");
+            try {
+                Intent fbIntent = new Intent();
+                fbIntent.setClassName("com.facebook.katana", "com.facebook.composer.shareintent.ImplicitShareIntentHandlerDefaultAlias");
+                fbIntent.setAction(Intent.ACTION_SEND);
+                fbIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                fbIntent.setType("image/png");
+                fbIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(fbIntent);
+            } catch (Exception e) {
+                Toast.makeText(this,this.getString(R.string.facebook_app_not_exist),Toast.LENGTH_SHORT).show();
+            }
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

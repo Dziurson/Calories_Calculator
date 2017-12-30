@@ -9,8 +9,9 @@ public class UserSettings {
     public static VelocityUnit usedVelocity = VelocityUnit.VELOCITY_IN_MPS;
     public static OutputFileFormat exportFileFormat = OutputFileFormat.GPX;
     public static String userFileDirectory = "/CalCalc/data/";
+    public static String testDir = "/CalCalc/";
     public static boolean isMapVisibleOnStartup = false;
-    public static PropertyInteger delayBetweenPoints = new PropertyInteger(1);
+    public static PropertyInteger delayBetweenPoints = new PropertyInteger(0);
     public static PropertyInteger userWeight = new PropertyInteger(50);
     public static PropertyInteger userHeight = new PropertyInteger(156);
     public static PropertyInteger userAge = new PropertyInteger(20);

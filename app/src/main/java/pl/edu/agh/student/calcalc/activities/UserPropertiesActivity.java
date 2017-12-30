@@ -45,6 +45,10 @@ public class UserPropertiesActivity extends AppCompatActivity
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
 
+        MenuItem item = navSideMenu.getMenu().getItem(4);
+        item.setVisible(false);
+        prepareExpandableList();
+
         prepareExpandableList();
     }
 
@@ -102,10 +106,7 @@ public class UserPropertiesActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
 
-        } else if (id == R.id.dmi_send) {
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
