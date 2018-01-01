@@ -41,4 +41,5 @@
     <string name="no_file_manager_installed">Nie znaleziono żadnego eksploratora plików.</string>
     <string name="parsing_error">Wystąpił błąd podczas parsowania pliku.</string>
     <string name="unknown_error">Coś poszło nie tak.</string>
+    <string name="calories_burned">Spalone kalorie</string>
 </resources>

@@ -39,6 +39,7 @@ import java.util.Locale;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment;
+import pl.edu.agh.student.calcalc.enums.ActivityType;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
@@ -50,6 +51,7 @@ import pl.edu.agh.student.calcalc.helpers.FileHelper;
 import pl.edu.agh.student.calcalc.listeners.ApplicationLocationListener;
 import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
 import pl.edu.agh.student.calcalc.commands.OnProviderChangeCommand;
+import pl.edu.agh.student.calcalc.utilities.CalorieCalculator;
 import pl.edu.agh.student.calcalc.utilities.FileSerializer;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
@@ -60,7 +62,7 @@ public class MainActivity extends AppCompatActivity
 
     private TextView gpsStateTextView;
     private Timer durationTimer;
-    private FloatingActionButton startActivityButton;
+    private CustomFloatingActionButton startActivityButton;
     private CustomFloatingActionButton pauseActivityButton;
     private NavigationView navSideMenu;
     private ApplicationLocationListener locationListener;
@@ -70,6 +72,7 @@ public class MainActivity extends AppCompatActivity
     private TextView latitudeTextView;
     private TextView altitudeTextView;
     private TextView velocityTextView;
+    private TextView caloriesBurnedTextView;
     private CheckBox showMapCheckBox;
     private CustomSupportMapFragment googleMapFragment;
     private GoogleMap googleMap;
@@ -77,6 +80,8 @@ public class MainActivity extends AppCompatActivity
     private CustomScrollView mainActivityScrollView;
     private int pointToDrawMarker = 0;
     private Toolbar toolbar;
+    private CalorieCalculator calorieCalculator;
+    private double totalCalories;
     DrawerLayout drawer;
 
     public static boolean isTrackingActive = false;
@@ -243,6 +248,12 @@ public class MainActivity extends AppCompatActivity
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
         }
+        if(isTrackingActive && calorieCalculator != null) {
+            totalCalories += calorieCalculator.calculateCalories(location);
+        }
+        if(caloriesBurnedTextView != null) {
+            caloriesBurnedTextView.setText(String.format(Locale.getDefault(),"%.2f " + getString(R.string.kcal),totalCalories));
+        }
         lastLocation = location;
         pointToDrawMarker--;
     }
@@ -263,6 +274,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking(View view) {
+        calorieCalculator = new CalorieCalculator(ActivityType.WALKING);
+        totalCalories = 0;
         gpxSerializer = new FileSerializer(this);
         if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
             durationTimer.start();
@@ -314,7 +327,8 @@ public class MainActivity extends AppCompatActivity
         latitudeTextView = (TextView) findViewById(R.id.main_activity_latitude);
         altitudeTextView = (TextView) findViewById(R.id.main_activity_altitude);
         velocityTextView = (TextView) findViewById(R.id.main_activity_velocity);
-        startActivityButton = (FloatingActionButton) findViewById(R.id.fabRun);
+        caloriesBurnedTextView = (TextView) findViewById(R.id.main_activity_calories);
+        startActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabRun);
         pauseActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabPause);
         mainActivityScrollView = (CustomScrollView) findViewById(R.id.main_activity_scroll_view);
         showMapCheckBox = (CheckBox) findViewById(R.id.main_activity_check_box);

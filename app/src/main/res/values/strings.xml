@@ -45,4 +45,7 @@
     <string name="no_file_manager_installed">File manager not found.</string>
     <string name="parsing_error">An error occurred while parsing file.</string>
     <string name="unknown_error">Something went wrong.</string>
+    <string name="calories_burned">Calories burned</string>
+    <string name="kcal">kcal</string>
+    <string name="default_kcal">0 kcal</string>
 </resources>

@@ -137,4 +137,20 @@
         android:textSize="32sp"
         android:text="@string/default_velocity" />
 
+    <TextView
+        android:id="@+id/main_activity_calories_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/calories_burned"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="8dp"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/main_activity_calories"
+        android:layout_marginLeft="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="32sp"
+        android:text="@string/default_kcal" />
 </LinearLayout>

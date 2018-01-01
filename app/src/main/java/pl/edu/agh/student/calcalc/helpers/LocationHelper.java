@@ -20,4 +20,12 @@ public class LocationHelper {
         String lonFormatted = Math.abs(lonDegrees)+ "° " + Math.abs(lonMinutes) + "' " + Math.abs(lonSeconds) + "\" " + ((lonSeconds >= 0) ? "E" : "W");
         return new Tuple<>(latFormatted,lonFormatted);
     }
+
+    public static double getVelocity(Location from, Location to) {
+        return (from != null && to != null) ? to.distanceTo(from)/((to.getTime() - from.getTime())/1000) : 0;
+    }
+
+    public static double getSlope (Location from, Location to) {
+        return (from != null && to != null) ? Math.abs(to.getAltitude()-from.getAltitude())/to.distanceTo(from) : 0;
+    }
 }

@@ -2,30 +2,28 @@ package pl.edu.agh.student.calcalc.utilities;
 import java.util.ArrayList;
 import static java.lang.Math.pow;
 
-public class SplineInterpolation
-{
-
+public class SplineInterpolation {
     private static final int element_count = 10;
     private ArrayList<Double> values;
     private double m1, m2, d[], a[], step;
-    public SplineInterpolation()
-    {
+
+    public SplineInterpolation() {
         values = new ArrayList<>();
         for (int i = 0; i < 4; i++) values.add(0.0d);
         step = 1.0d / (element_count - 1);
         d = new double[3];
         a = new double[4];
     }
-    public double getFirst()
-    {
+
+    public double getFirst() {
         return values.get(0);
     }
-    public double getLast()
-    {
+
+    public double getLast() {
         return values.get(3);
     }
-    private double moveValues(double d)
-    {
+
+    private double moveValues(double d) {
         double tmp = getFirst();
         values.set(0, values.get(1));
         values.set(1, values.get(2));
@@ -34,22 +32,18 @@ public class SplineInterpolation
         return tmp;
     }
 
-
-    private void AddValue(double d)
-    {
+    private void AddValue(double d) {
         moveValues(d);
     }
-    public ArrayList<Double> calculateNewSpline(double d)
-    {
+
+    public ArrayList<Double> calculateNewSpline(double d) {
         AddValue(d);
         if ((getFirst() != 0.0d)) return calculate();
         else return null;
     }
 
-    private ArrayList<Double> calculate()
-    {
-        for (int i = 0; i < 3; i++)
-        {
+    private ArrayList<Double> calculate() {
+        for (int i = 0; i < 3; i++) {
             d[i] = values.get(i + 1) - values.get(i);
         }
         m1 = (10.0 * d[1] - 8.0 * d[0] - 2.0 * d[2]) / 5.0;
@@ -60,8 +54,7 @@ public class SplineInterpolation
         a[3] = (m2 - m1) / 6.0;
 
         ArrayList<Double> ret_list = new ArrayList<>();
-        for (int i = 0; i < element_count; i++)
-        {
+        for (int i = 0; i < element_count; i++) {
             ret_list.add(a[0] + a[1] * (step * i) + a[2] * pow(step * i, 2) + a[3] * pow(step * i, 3));
         }
         return ret_list;
