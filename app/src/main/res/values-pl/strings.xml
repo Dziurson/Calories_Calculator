@@ -42,4 +42,10 @@
     <string name="parsing_error">Wystąpił błąd podczas parsowania pliku.</string>
     <string name="unknown_error">Coś poszło nie tak.</string>
     <string name="calories_burned">Spalone kalorie</string>
+    <string name="enabled">Wł.</string>
+    <string name="disabled">Wył.</string>
+    <string name="interpolation_label">Interpolacja</string>
+    <string name="activity_type_running">Bieganie</string>
+    <string name="activity_type_walking">Chodzenie</string>
+    <string name="activity_type_header">Rodzaj Aktywności</string>
 </resources>

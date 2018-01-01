@@ -8,13 +8,15 @@ import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
 public class PropertyInteger implements IPropertyWithResource {
 
     int value;
+    private final int stringResourceIdWhenZero;
 
-    public PropertyInteger(int value) {
+    public PropertyInteger(int value, int stringResourceIdWhenZero) {
         this.value = value;
+        this.stringResourceIdWhenZero = stringResourceIdWhenZero;
     }
     @Override
     public String getString(Activity context) {
-        return (value == 0) ? context.getString(R.string.no_points) : ((Integer)value).toString();
+        return (value == 0) ? context.getString(stringResourceIdWhenZero) : ((Integer)value).toString();
     }
 
     public int getValue() {

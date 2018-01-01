@@ -14,6 +14,7 @@ import java.util.List;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.controls.CustomSeekBar;
+import pl.edu.agh.student.calcalc.enums.ActivityType;
 import pl.edu.agh.student.calcalc.enums.UserGender;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.interfaces.IPropertyWithResource;
@@ -46,6 +47,9 @@ public class UserPropertiesExpandableListAdapter extends CustomExpandableListAda
             case USER_GENDER:
                 convertView = groupInit(ExpandableListViewGroup.USER_GENDER,UserSettings.userGender);
                 break;
+            case ACTIVITY_TYPE:
+                convertView = groupInit(ExpandableListViewGroup.ACTIVITY_TYPE,UserSettings.activityType);
+                break;
         }
         return convertView;
     }
@@ -65,7 +69,51 @@ public class UserPropertiesExpandableListAdapter extends CustomExpandableListAda
             case USER_GENDER:
                 convertView = userGenderChildInit(parent);
                 break;
+            case ACTIVITY_TYPE:
+                convertView = activityTypeChildInit(parent);
+                break;
         }
+        return convertView;
+    }
+
+    private View activityTypeChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.user_properties_expandable_list_child_activity_type, null);
+        final SeekBar activityTypeSeekBar = (CustomSeekBar) convertView.findViewById(R.id.user_properties_expandable_list_activity_type);
+        final TextView headerValueTextView = (TextView) parent.findViewById(R.id.user_properties_group_activity_type_value);
+        int progress = 0;
+        switch(UserSettings.activityType) {
+            case WALKING:
+                progress = 0;
+                break;
+            case RUNNING:
+                progress = 1;
+                break;
+        }
+        activityTypeSeekBar.setProgress(progress);
+        activityTypeSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                switch (progress) {
+                    case 0:
+                        UserSettings.activityType = ActivityType.WALKING;
+                        break;
+                    case 1:
+                        UserSettings.activityType = ActivityType.RUNNING;
+                        break;
+                }
+                headerValueTextView.setText(UserSettings.activityType.getString(context));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         return convertView;
     }
 

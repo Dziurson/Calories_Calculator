@@ -127,6 +127,11 @@ public class SettingsActivity extends AppCompatActivity
         Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> mapPointsEntry = new Tuple<>(ExpandableListViewGroup.MAP_POINTS,mapPointsChildren);
         listMap.add(mapPointsEntry);
 
+        List<ExpandableListViewChild> interpolationChildren = new ArrayList<>();
+        interpolationChildren.add(ExpandableListViewChild.INTERPOLATION);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> interpolationEntry = new Tuple<>(ExpandableListViewGroup.INTERPOLATION,interpolationChildren);
+        listMap.add(interpolationEntry);
+
         listAdapter = new SettingsExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
     }

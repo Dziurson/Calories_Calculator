@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     private int pointToDrawMarker = 0;
     private Toolbar toolbar;
     private CalorieCalculator calorieCalculator;
-    private double totalCalories;
+    private double totalCalories = 0;
     DrawerLayout drawer;
 
     public static boolean isTrackingActive = false;
