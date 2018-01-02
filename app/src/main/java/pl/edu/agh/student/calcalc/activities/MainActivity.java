@@ -2,6 +2,8 @@ package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,6 +11,8 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -20,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +49,7 @@ import pl.edu.agh.student.calcalc.enums.InterpolationState;
 import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.helpers.DateHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
+import pl.edu.agh.student.calcalc.helpers.StringHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
 import pl.edu.agh.student.calcalc.enums.LocationServiceState;
@@ -229,7 +235,13 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public View getInfoContents(Marker marker) {
-                return null;
+                View markerLayout = ((LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_map_marker, null);
+                String[] parts = marker.getSnippet().split(";");
+                ((TextView)markerLayout.findViewById(R.id.custom_map_marker_longitude)).setText(parts[0]);
+                ((TextView)markerLayout.findViewById(R.id.custom_map_marker_latitude)).setText(parts[1]);
+                ((TextView)markerLayout.findViewById(R.id.custom_map_marker_altitude_value)).setText(StringHelper.concat(parts[2]," ",MainActivity.this.getString(R.string.m_a_s_l)));
+                ((TextView)markerLayout.findViewById(R.id.custom_map_marker_burned_calories_value)).setText(StringHelper.concat(parts[4]," ",MainActivity.this.getString(R.string.kcal)));
+                return markerLayout;
             }
         });
     }
@@ -241,6 +253,9 @@ public class MainActivity extends AppCompatActivity
         totalMpsVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_MPS.toString());
         totalKphVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString());
         totalTime += timeDifference;
+        if(isTrackingActive && calorieCalculator != null) {
+            totalCalories += calorieCalculator.calculateCalories(location);
+        }
         if(latitudeTextView != null && longitudeTextView != null) {
             latitudeTextView.setText(formattedLocationTuple.first);
             longitudeTextView.setText(formattedLocationTuple.second);
@@ -263,7 +278,7 @@ public class MainActivity extends AppCompatActivity
         }
         if(googleMap != null) {
             if(pointToDrawMarker <= 0 && UserSettings.delayBetweenPoints.getValue() != 0) {
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Test").snippet("test\n\rtest\n\r").icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
+                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).snippet(formattedLocationTuple.first + ";" + formattedLocationTuple.second + ";" + ((Double)location.getAltitude()).toString() + ";" + ((Double)location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString())).toString() + ";" + String.format(Locale.getDefault(),"%.2f",totalCalories)).icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
                 pointToDrawMarker = UserSettings.delayBetweenPoints.getValue();
             }
             if(lastLocation != null) {
@@ -273,9 +288,6 @@ public class MainActivity extends AppCompatActivity
                         .color(getResources().getColor(R.color.colorLightBlue)));
             }
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16)); //TODO: ADD ZOOM CHANGE DUE TO SPEED
-        }
-        if(isTrackingActive && calorieCalculator != null) {
-            totalCalories += calorieCalculator.calculateCalories(location);
         }
         if(caloriesBurnedTextView != null) {
             caloriesBurnedTextView.setText(String.format(Locale.getDefault(),"%.2f " + getString(R.string.kcal),totalCalories));
