@@ -2,8 +2,6 @@ package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -24,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -97,8 +93,7 @@ public class MainActivity extends AppCompatActivity
     private SplineInterpolation interpolationX;
     private SplineInterpolation interpolationY;
     private InterpolationState currentActivityInterpolationState;
-    private double totalMpsVelocity = 0;
-    private double totalKphVelocity = 0;
+    private double totalDistance = 0;
     private double totalTime= 0;
     DrawerLayout drawer;
 
@@ -249,10 +244,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         Tuple<String, String> formattedLocationTuple = LocationHelper.format(location);
-        double timeDifference = (lastLocation != null) ? DateHelper.getInterval(new Date(location.getTime()),new Date(lastLocation.getTime()))/1000 : 1;
-        totalMpsVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_MPS.toString());
-        totalKphVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString());
-        totalTime += timeDifference;
+        totalDistance += (lastLocation != null) ? lastLocation.distanceTo(location) : 0;
+        totalTime += (lastLocation != null) ? DateHelper.getInterval(new Date(location.getTime()),new Date(lastLocation.getTime()))/1000 : 1;
         if(isTrackingActive && calorieCalculator != null) {
             totalCalories += calorieCalculator.calculateCalories(location);
         }
@@ -269,10 +262,10 @@ public class MainActivity extends AppCompatActivity
         if(averageVelocityTextView != null) {
             switch (UserSettings.usedVelocity) {
                 case VELOCITY_IN_KPH:
-                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalKphVelocity*timeDifference/totalTime),UserSettings.usedVelocity.getString(this)));
+                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalDistance/totalTime*3.6),UserSettings.usedVelocity.getString(this)));
                     break;
                 case VELOCITY_IN_MPS:
-                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalMpsVelocity*timeDifference/totalTime),UserSettings.usedVelocity.getString(this)));
+                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalDistance/totalTime),UserSettings.usedVelocity.getString(this)));
                     break;
             }
         }
@@ -314,9 +307,8 @@ public class MainActivity extends AppCompatActivity
     private void startTracking(View view) {
         calorieCalculator = new CalorieCalculator(UserSettings.activityType);
         currentActivityInterpolationState = UserSettings.interpolationState;
-        totalMpsVelocity = 0;
-        totalKphVelocity = 0;
         totalTime = 0;
+        totalDistance = 0;
         totalCalories = 0;
         gpxSerializer = new FileSerializer(this);
         interpolatedSerializer = new FileSerializer(this);

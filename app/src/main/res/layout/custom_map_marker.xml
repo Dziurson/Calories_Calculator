@@ -46,6 +46,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/default_altitude"
+            android:textColor="@color/colorLightBlue"
             android:layout_marginStart="10dp"
             android:textAlignment="textEnd" />
     </LinearLayout>
@@ -68,6 +69,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/zero"
+            android:textColor="@color/colorLightBlue"
             android:textAlignment="textEnd" />
     </LinearLayout>
 </LinearLayout>
