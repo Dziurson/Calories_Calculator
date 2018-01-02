@@ -10,6 +10,7 @@
     <string name="longitude_label">Długość geograficzna</string>
     <string name="altitude_label">Wysokość</string>
     <string name="velocity_label">Prędkość</string>
+    <string name="average_velocity_label">Średnia prędkość</string>
     <string name="location_label">Lokalizacja</string>
     <string name="m_a_s_l">m n.p.m.</string>
     <string name="meters_per_second">m/s</string>

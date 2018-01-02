@@ -7,7 +7,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
@@ -34,12 +33,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment;
-import pl.edu.agh.student.calcalc.enums.ActivityType;
+import pl.edu.agh.student.calcalc.enums.InterpolationState;
+import pl.edu.agh.student.calcalc.enums.VelocityUnit;
+import pl.edu.agh.student.calcalc.helpers.DateHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
@@ -53,6 +56,7 @@ import pl.edu.agh.student.calcalc.commands.OnLocationChangeCommand;
 import pl.edu.agh.student.calcalc.commands.OnProviderChangeCommand;
 import pl.edu.agh.student.calcalc.utilities.CalorieCalculator;
 import pl.edu.agh.student.calcalc.utilities.FileSerializer;
+import pl.edu.agh.student.calcalc.utilities.SplineInterpolation;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 import static android.os.Environment.getExternalStorageDirectory;
@@ -67,11 +71,13 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navSideMenu;
     private ApplicationLocationListener locationListener;
     private FileSerializer gpxSerializer;
+    private FileSerializer interpolatedSerializer;
     private TextView timerTextView;
     private TextView longitudeTextView;
     private TextView latitudeTextView;
     private TextView altitudeTextView;
     private TextView velocityTextView;
+    private TextView averageVelocityTextView;
     private TextView caloriesBurnedTextView;
     private CheckBox showMapCheckBox;
     private CustomSupportMapFragment googleMapFragment;
@@ -82,6 +88,12 @@ public class MainActivity extends AppCompatActivity
     private Toolbar toolbar;
     private CalorieCalculator calorieCalculator;
     private double totalCalories = 0;
+    private SplineInterpolation interpolationX;
+    private SplineInterpolation interpolationY;
+    private InterpolationState currentActivityInterpolationState;
+    private double totalMpsVelocity = 0;
+    private double totalKphVelocity = 0;
+    private double totalTime= 0;
     DrawerLayout drawer;
 
     public static boolean isTrackingActive = false;
@@ -225,6 +237,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         Tuple<String, String> formattedLocationTuple = LocationHelper.format(location);
+        double timeDifference = (lastLocation != null) ? DateHelper.getInterval(new Date(location.getTime()),new Date(lastLocation.getTime()))/1000 : 1;
+        totalMpsVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_MPS.toString());
+        totalKphVelocity += location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString());
+        totalTime += timeDifference;
         if(latitudeTextView != null && longitudeTextView != null) {
             latitudeTextView.setText(formattedLocationTuple.first);
             longitudeTextView.setText(formattedLocationTuple.second);
@@ -234,6 +250,16 @@ public class MainActivity extends AppCompatActivity
         }
         if(velocityTextView != null) {
             velocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)location.getExtras().getDouble(UserSettings.usedVelocity.toString()),UserSettings.usedVelocity.getString(this)));
+        }
+        if(averageVelocityTextView != null) {
+            switch (UserSettings.usedVelocity) {
+                case VELOCITY_IN_KPH:
+                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalKphVelocity*timeDifference/totalTime),UserSettings.usedVelocity.getString(this)));
+                    break;
+                case VELOCITY_IN_MPS:
+                    averageVelocityTextView.setText(String.format(Locale.getDefault(),"%d %s",(int)(totalMpsVelocity*timeDifference/totalTime),UserSettings.usedVelocity.getString(this)));
+                    break;
+            }
         }
         if(googleMap != null) {
             if(pointToDrawMarker <= 0 && UserSettings.delayBetweenPoints.getValue() != 0) {
@@ -274,10 +300,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking(View view) {
-        calorieCalculator = new CalorieCalculator(ActivityType.WALKING);
+        calorieCalculator = new CalorieCalculator(UserSettings.activityType);
+        currentActivityInterpolationState = UserSettings.interpolationState;
+        totalMpsVelocity = 0;
+        totalKphVelocity = 0;
+        totalTime = 0;
         totalCalories = 0;
         gpxSerializer = new FileSerializer(this);
+        interpolatedSerializer = new FileSerializer(this);
         if (gpxSerializer.start(FileHelper.getExportFileName(), UserSettings.exportFileFormat)) {
+            if(currentActivityInterpolationState == InterpolationState.ENABLED) {
+                interpolatedSerializer.start("Interpolated" + FileHelper.getExportFileName(), UserSettings.exportFileFormat);
+            }
             durationTimer.start();
             Snackbar.make(view, R.string.tracking_started, Snackbar.LENGTH_SHORT).show();
             startActivityButton.setImageResource(R.drawable.ic_icon_stop);
@@ -293,6 +327,11 @@ public class MainActivity extends AppCompatActivity
         pauseActivityButton.setImageResource(R.drawable.ic_icon_pause);
         pauseActivityButton.setVisibility(View.INVISIBLE);
         gpxSerializer.stop();
+        if(interpolatedSerializer != null) {
+            if(interpolatedSerializer.isStarted()) {
+                interpolatedSerializer.stop();
+            }
+        }
         isTrackingActive = false;
     }
 
@@ -318,6 +357,8 @@ public class MainActivity extends AppCompatActivity
     private void initializeFields() {
         durationTimer = new Timer(null, this);
         locationListener = ApplicationLocationListener.getInstance();
+        interpolationX = new SplineInterpolation();
+        interpolationY = new SplineInterpolation();
     }
 
     private void InitializeLayout() {
@@ -327,6 +368,7 @@ public class MainActivity extends AppCompatActivity
         latitudeTextView = (TextView) findViewById(R.id.main_activity_latitude);
         altitudeTextView = (TextView) findViewById(R.id.main_activity_altitude);
         velocityTextView = (TextView) findViewById(R.id.main_activity_velocity);
+        averageVelocityTextView = (TextView) findViewById(R.id.main_activity_average_velocity);
         caloriesBurnedTextView = (TextView) findViewById(R.id.main_activity_calories);
         startActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabRun);
         pauseActivityButton = (CustomFloatingActionButton) findViewById(R.id.fabPause);
@@ -383,6 +425,19 @@ public class MainActivity extends AppCompatActivity
                 if(gpxSerializer != null) {
                     if(gpxSerializer.isStarted()) {
                         gpxSerializer.addNewPoint(location);
+                    }
+                    if(currentActivityInterpolationState == InterpolationState.ENABLED) {
+                        if(interpolatedSerializer != null) {
+                            if (interpolatedSerializer.isStarted()) {
+                                ArrayList<Double> latList = interpolationX.calculateNewSpline(location.getLatitude());
+                                ArrayList<Double> lonList = interpolationY.calculateNewSpline(location.getLongitude());
+                                if (latList != null && lonList != null) {
+                                    for(int i=0; i<10;i++) {
+                                        interpolatedSerializer.addNewPoint(latList.get(i),lonList.get(i), location.getAltitude());
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

@@ -10,6 +10,7 @@
     <string name="longitude_label">Longitude</string>
     <string name="altitude_label">Altitude</string>
     <string name="velocity_label">Velocity</string>
+    <string name="average_velocity_label">Average Velocity</string>
     <string name="location_label">Location</string>
     <string name="m_a_s_l">m a.s.l.</string>
     <string name="meters_per_second">m/s</string>
