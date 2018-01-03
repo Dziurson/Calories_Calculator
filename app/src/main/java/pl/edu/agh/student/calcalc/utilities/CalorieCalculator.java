@@ -17,4 +17,8 @@ public class CalorieCalculator {
         lastLocation = location;
         return caloriesBurned;
     }
+
+    public ActivityType getCurrentActivity() {
+        return currentActivity;
+    }
 }

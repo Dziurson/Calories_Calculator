@@ -2,6 +2,8 @@ package pl.edu.agh.student.calcalc.activities;
 
 import android.Manifest;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,6 +36,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
@@ -41,6 +45,7 @@ import java.util.Locale;
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment;
+import pl.edu.agh.student.calcalc.enums.ActivityType;
 import pl.edu.agh.student.calcalc.enums.InterpolationState;
 import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.helpers.DateHelper;
@@ -95,9 +100,12 @@ public class MainActivity extends AppCompatActivity
     private InterpolationState currentActivityInterpolationState;
     private double totalDistance = 0;
     private double totalTime= 0;
+    private String filename;
     DrawerLayout drawer;
 
     public static boolean isTrackingActive = false;
+
+    private static final int SHARE_REQUEST_CODE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -191,14 +199,63 @@ public class MainActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         }
         else if (id == R.id.dmi_share) {
-            File file = new File(getExternalStorageDirectory().getPath() + UserSettings.testDir + "test.png");
+            double averageVelocity;
+            filename = getExternalStorageDirectory().getPath() + UserSettings.testDir + ((Long)new Date().getTime()).toString() + ".png";
+            if(totalTime == 0) {
+                averageVelocity = 0;
+            }
+            else {
+                averageVelocity = (UserSettings.usedVelocity == VelocityUnit.VELOCITY_IN_KPH) ? totalDistance/totalTime*3.6 : totalDistance/totalTime;
+            }
+            View shareImageLayout = ((LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.share_image_layout, null);
+            String activityType = "";
+            if(calorieCalculator!= null) {
+                switch (calorieCalculator.getCurrentActivity()) {
+                    case WALKING:
+                        activityType = getString(R.string.activity_type_walking);
+                        break;
+                    case RUNNING:
+                        activityType = getString(R.string.activity_type_running);
+                        break;
+                }
+            }
+            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_activity_type)).setText(activityType);
+            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_total_distance_value)).setText(String.format(Locale.getDefault(),"%.2f m",totalDistance));
+            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_average_velocity_value)).setText(String.format(Locale.getDefault(),"%.2f %s",averageVelocity,UserSettings.usedVelocity.getString(this)));
+            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_calories_burned_value)).setText(String.format(Locale.getDefault(),"%.2f %s",totalCalories,getString(R.string.kcal)));
+            shareImageLayout.setDrawingCacheEnabled(true);
+            shareImageLayout.buildDrawingCache();
+            Bitmap shareImage = Bitmap.createBitmap(800,400,Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(shareImage);
+            shareImageLayout.measure(800,400);
+            shareImageLayout.layout(0,0,800,400);
+            shareImageLayout.draw(canvas);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(filename);
+                shareImage.compress(Bitmap.CompressFormat.PNG,100,fos);
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                }
+                catch (IOException exc) {
+                    exc.printStackTrace();
+                }
+            }
+            File file = new File(filename);
             try {
                 Intent shareIntent = new Intent();
                 shareIntent.setAction(Intent.ACTION_SEND);
                 shareIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
                 shareIntent.setType("image/png");
                 shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, "send"));
+                startActivityForResult(Intent.createChooser(shareIntent, "send"),SHARE_REQUEST_CODE);
             } catch (Exception e) {
                 Toast.makeText(this,this.getString(R.string.no_sharing_app_found),Toast.LENGTH_SHORT).show();
             }
@@ -477,5 +534,17 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == SHARE_REQUEST_CODE) {
+            if(filename != null) {
+                File file = new File(filename);
+                if(file.exists() && !file.isDirectory()) {
+                    file.delete();
+                }
+            }
+        }
     }
 }
