@@ -12,15 +12,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ExpandableListView;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.adapters.SettingsExpandableListAdapter;
+import pl.edu.agh.student.calcalc.globals.Properties;
+import pl.edu.agh.student.calcalc.globals.UserSettings;
+import pl.edu.agh.student.calcalc.helpers.StringHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+
+import static android.os.Environment.getExternalStorageDirectory;
 
 public class SettingsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -28,7 +39,6 @@ public class SettingsActivity extends AppCompatActivity
     NavigationView navSideMenu;
     SettingsExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    MenuItem socialGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,5 +144,11 @@ public class SettingsActivity extends AppCompatActivity
 
         listAdapter = new SettingsExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ActivityHelper.savePropertiesState(Properties.stateFile);
     }
 }

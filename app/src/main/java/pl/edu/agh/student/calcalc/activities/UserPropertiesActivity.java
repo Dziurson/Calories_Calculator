@@ -19,6 +19,7 @@ import pl.edu.agh.student.calcalc.adapters.UserPropertiesExpandableListAdapter;
 import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
+import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 
@@ -140,5 +141,11 @@ public class UserPropertiesActivity extends AppCompatActivity
 
         listAdapter = new UserPropertiesExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ActivityHelper.savePropertiesState(Properties.stateFile);
     }
 }

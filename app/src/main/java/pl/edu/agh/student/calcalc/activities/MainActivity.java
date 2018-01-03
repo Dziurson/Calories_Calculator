@@ -35,8 +35,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -47,10 +50,13 @@ import pl.edu.agh.student.calcalc.controls.CustomScrollView;
 import pl.edu.agh.student.calcalc.controls.CustomSupportMapFragment;
 import pl.edu.agh.student.calcalc.enums.ActivityType;
 import pl.edu.agh.student.calcalc.enums.InterpolationState;
+import pl.edu.agh.student.calcalc.enums.OutputFileFormat;
+import pl.edu.agh.student.calcalc.enums.UserGender;
 import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.helpers.DateHelper;
 import pl.edu.agh.student.calcalc.helpers.LocationHelper;
 import pl.edu.agh.student.calcalc.helpers.StringHelper;
+import pl.edu.agh.student.calcalc.types.PropertyInteger;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomFloatingActionButton;
 import pl.edu.agh.student.calcalc.enums.LocationServiceState;
@@ -67,6 +73,8 @@ import pl.edu.agh.student.calcalc.utilities.SplineInterpolation;
 import pl.edu.agh.student.calcalc.utilities.Timer;
 
 import static android.os.Environment.getExternalStorageDirectory;
+import static pl.edu.agh.student.calcalc.enums.VelocityUnit.VELOCITY_IN_KPH;
+import static pl.edu.agh.student.calcalc.enums.VelocityUnit.VELOCITY_IN_MPS;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ActivityCompat.OnRequestPermissionsResultCallback, OnMapReadyCallback, OnLocationChangeCommand {
@@ -111,6 +119,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        restoreSavedState();
 
         //Sets global reference to MainActivity
         Properties.mainActivity = this;
@@ -529,6 +539,7 @@ public class MainActivity extends AppCompatActivity
         showMapCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                UserSettings.isMapVisibleOnStartup = isChecked;
                 if(googleMapFragment != null && showMapCheckBox != null) {
                     googleMapFragment.reloadDimensions(showMapCheckBox.isChecked());
                 }
@@ -546,5 +557,98 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }
+    }
+
+    private void restoreSavedState() {
+        File statefile = new File(Properties.stateFile);
+        if(statefile.exists() && !statefile.isDirectory()) {
+            try {
+                FileReader freader = new FileReader(statefile);
+                BufferedReader reader = new BufferedReader(freader);
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(";");
+                    switch (parts[0]) {
+                        case "velocityUnit":
+                            switch (parts[1]) {
+                                case "VELOCITY_IN_MPS":
+                                    UserSettings.usedVelocity = VELOCITY_IN_MPS;
+                                    break;
+                                case "VELOCITY_IN_KPH":
+                                    UserSettings.usedVelocity = VELOCITY_IN_KPH;
+                                    break;
+                            }
+                            break;
+                        case "exportFileFormat":
+                            switch (parts[1]) {
+                                case "GPX":
+                                    UserSettings.exportFileFormat = OutputFileFormat.GPX;
+                                    break;
+                                case "KML":
+                                    UserSettings.exportFileFormat = OutputFileFormat.KML;
+                                    break;
+                            }
+                            break;
+                        case "isMapVisible":
+                            UserSettings.isMapVisibleOnStartup = (parts[1].compareToIgnoreCase("true") == 0);
+                            break;
+                        case "delayBetweenPoints":
+                            UserSettings.delayBetweenPoints = new PropertyInteger(Integer.parseInt(parts[1]),R.string.no_points);
+                            break;
+                        case "userWeight":
+                            UserSettings.userWeight = new PropertyInteger(Integer.parseInt(parts[1]),R.string.zero);
+                            break;
+                        case "userHeight":
+                            UserSettings.userHeight = new PropertyInteger(Integer.parseInt(parts[1]),R.string.zero);
+                            break;
+                        case "userAge":
+                            UserSettings.userAge = new PropertyInteger(Integer.parseInt(parts[1]),R.string.zero);
+                            break;
+                        case "userGender":
+                            switch (parts[1]) {
+                                case "GENDER_MALE":
+                                    UserSettings.userGender = UserGender.GENDER_MALE;
+                                    break;
+                                case "GENDER_FEMALE":
+                                    UserSettings.userGender = UserGender.GENDER_FEMALE;
+                                    break;
+                            }
+                            break;
+                        case "interpolationState":
+                            switch (parts[1]) {
+                                case "ENABLED":
+                                    UserSettings.interpolationState = InterpolationState.ENABLED;
+                                    break;
+                                case "DISABLED":
+                                    UserSettings.interpolationState = InterpolationState.DISABLED;
+                                    break;
+                            }
+                            break;
+                        case "activityType":
+                            switch (parts[1]) {
+                                case "WALKING":
+                                    UserSettings.activityType = ActivityType.WALKING;
+                                    break;
+                                case "RUNNING":
+                                    UserSettings.activityType = ActivityType.RUNNING;
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                reader.close();
+                freader.close();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ActivityHelper.savePropertiesState(Properties.stateFile);
     }
 }
