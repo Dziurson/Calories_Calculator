@@ -160,17 +160,7 @@ public class MapActivity extends AppCompatActivity
         } else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         } else if (id == R.id.dmi_share) {
-            File file = new File(getExternalStorageDirectory().getPath() + UserSettings.testDir + "test.png");
-            try {
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
-                shareIntent.setType("image/png");
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(shareIntent, "send"));
-            } catch (Exception e) {
-                Toast.makeText(this,this.getString(R.string.no_sharing_app_found),Toast.LENGTH_SHORT).show();
-            }
+
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -232,7 +222,8 @@ public class MapActivity extends AppCompatActivity
                     String fileExtension = FilenameUtils.getExtension(selectedFile.getName());
                     try {
                         if (fileExtension.compareToIgnoreCase("kml") == 0) {
-                            FileParser.parseKmlFile(selectedFile);
+                            locations = FileParser.parseKmlFile(selectedFile);
+                            showPolyline(locations);
                         }
                         else if (fileExtension.compareToIgnoreCase("gpx") == 0) {
                             locations = FileParser.parseGpxFile(selectedFile);

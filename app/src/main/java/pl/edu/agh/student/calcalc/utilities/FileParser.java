@@ -69,7 +69,36 @@ public class FileParser {
         return result;
     }
 
-    public static ArrayList<Location> parseKmlFile(File file) {
+    public static ArrayList<Location> parseKmlFile(File file) throws XmlPullParserException, IOException{
+        XmlPullParserFactory xmlParserFactory = XmlPullParserFactory.newInstance();
+        XmlPullParser parser = xmlParserFactory.newPullParser();
+        boolean startParsing = false;
+        FileReader fileReader = new FileReader(file);
+        parser.setInput(fileReader);
+        int event = parser.getEventType();
+        Location location = null;
+        LinkedList<Location> result = new LinkedList<>();
+        while(event != XmlPullParser.END_DOCUMENT) {
+            String tag = parser.getName();
+            switch (event) {
+                case XmlPullParser.START_TAG:
+                    if(tag.compareToIgnoreCase("coordinates") == 0) {
+                        startParsing = true;
+                    }
+                    break;
+                case XmlPullParser.END_TAG:
+                    if(tag.compareToIgnoreCase("coordinates") == 0) {
+                        startParsing = false;
+                    }
+                    break;
+            }
+            if(!(tag.compareToIgnoreCase("coordinates") == 0) && startParsing) {
+                String parts[] = tag.split(",");
+                if(parts.length == 3){
+                    //TODO: create location here
+                }
+            }
+        }
         return new ArrayList<>();
     }
 }

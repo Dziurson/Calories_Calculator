@@ -57,5 +57,6 @@
     <string name="activity_type_header">Activity Type</string>
     <string name="activity_stats">Activity Statistics</string>
     <string name="total_distance">Total Distance</string>
+    <string name="import_file">Import GPX/KML File</string>
     <string name="zero">0</string>
 </resources>

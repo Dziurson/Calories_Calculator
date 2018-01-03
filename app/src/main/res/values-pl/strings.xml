@@ -51,4 +51,5 @@
     <string name="activity_type_header">Rodzaj Aktywności</string>
     <string name="activity_stats">Statystyki Aktywności</string>
     <string name="total_distance">Całkowity dystans</string>
+    <string name="import_file">Zaimportuj Plik GPX lub KML</string>
 </resources>
