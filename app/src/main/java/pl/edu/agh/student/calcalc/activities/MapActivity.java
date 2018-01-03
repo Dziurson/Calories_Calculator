@@ -15,6 +15,7 @@
 package pl.edu.agh.student.calcalc.activities;
 
 import android.content.Intent;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -31,15 +32,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.commons.io.FilenameUtils;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
@@ -171,12 +177,56 @@ public class MapActivity extends AppCompatActivity
         return true;
     }
 
+    private void showPolyline(List<Location> locations) {
+        if(googleMap != null) {
+            LatLng southWest = null;
+            LatLng northEast = null;
+            PolylineOptions line = new PolylineOptions();
+            LatLng point;
+            for(Location location : locations) {
+                point = new LatLng(location.getLatitude(),location.getLongitude());
+                line.add(point);
+                if(southWest != null) {
+                    if(point.latitude < southWest.latitude){
+                        southWest = new LatLng(point.latitude,southWest.longitude);
+                    }
+                    if(point.longitude < southWest.longitude){
+                        southWest = new LatLng(southWest.latitude,point.longitude);
+                    }
+                }
+                else {
+                    southWest = new LatLng(location.getLatitude(),location.getLongitude());
+                }
+                if(northEast != null) {
+                    if(point.latitude > northEast.latitude) {
+                        northEast = new LatLng(point.latitude,northEast.longitude);
+                    }
+                    if(point.longitude > northEast.longitude) {
+                        northEast = new LatLng(northEast.latitude,point.longitude);
+                    }
+                }
+                else {
+                    northEast = new LatLng(location.getLatitude(),location.getLongitude());
+                }
+            }
+            line.color(getResources().getColor(R.color.colorAccent)).width(5);
+            googleMap.addPolyline(line);
+            try {
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(southWest,northEast),20));
+            }
+            catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+        }
+    }
+
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent resultData) {
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         switch(requestCode) {
             case ACTION_GET_CONTENT_REQUEST:
                 if(resultCode == RESULT_OK) {
+                    List<Location> locations;
                     String filepath = resultData.getData().getPath().replaceFirst("/file","");
                     File selectedFile = new File(filepath);
                     String fileExtension = FilenameUtils.getExtension(selectedFile.getName());
@@ -185,7 +235,8 @@ public class MapActivity extends AppCompatActivity
                             FileParser.parseKmlFile(selectedFile);
                         }
                         else if (fileExtension.compareToIgnoreCase("gpx") == 0) {
-                            FileParser.parseGpxFile(selectedFile);
+                            locations = FileParser.parseGpxFile(selectedFile);
+                            showPolyline(locations);
                         }
                         else {
                             Toast.makeText(this, this.getString(R.string.wrong_file_type_selected), Toast.LENGTH_SHORT).show();
