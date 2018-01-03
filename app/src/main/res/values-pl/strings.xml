@@ -52,4 +52,6 @@
     <string name="activity_stats">Statystyki Aktywności</string>
     <string name="total_distance">Całkowity dystans</string>
     <string name="import_file">Zaimportuj Plik GPX lub KML</string>
+    <string name="write_external_storage_permission_granted">Przyznano dostęp do wewnętrznej pamięci urządzenia.</string>
+    <string name="write_external_storage_permission_denied">Nie przyznano dostępu do wewnętrznej pamięci urządzenia. W celu skorzystania z funkcjonalności importowania pliku należy przyznać dostęp.</string>
 </resources>

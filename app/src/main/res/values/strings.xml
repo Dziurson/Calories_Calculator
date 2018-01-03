@@ -58,5 +58,7 @@
     <string name="activity_stats">Activity Statistics</string>
     <string name="total_distance">Total Distance</string>
     <string name="import_file">Import GPX/KML File</string>
+    <string name="write_external_storage_permission_granted">Write external storage permission granted.</string>
+    <string name="write_external_storage_permission_denied">Write external storage permission denied. In order to use Import File functionality you must grant permission.</string>
     <string name="zero">0</string>
 </resources>

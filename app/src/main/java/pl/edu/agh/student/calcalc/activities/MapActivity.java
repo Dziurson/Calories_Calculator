@@ -14,13 +14,15 @@
 
 package pl.edu.agh.student.calcalc.activities;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -49,11 +51,9 @@ import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
 import pl.edu.agh.student.calcalc.controls.CustomScrollView;
-import pl.edu.agh.student.calcalc.globals.UserSettings;
+import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.utilities.FileParser;
-
-import static android.os.Environment.getExternalStorageDirectory;
 
 public class MapActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -92,13 +92,18 @@ public class MapActivity extends AppCompatActivity
         buttonImportFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
-                    startActivityForResult(intent, ACTION_GET_CONTENT_REQUEST);
+                if (ActivityHelper.checkForPermissions(MapActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    try {
+                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                        intent.setType("file/*");
+                        startActivityForResult(intent, ACTION_GET_CONTENT_REQUEST);
+                    }
+                    catch (Exception e) {
+                        Toast.makeText(MapActivity.this,MapActivity.this.getString(R.string.no_file_manager_installed),Toast.LENGTH_SHORT).show();
+                    }
                 }
-                catch (Exception e) {
-                    Toast.makeText(MapActivity.this,MapActivity.this.getString(R.string.no_file_manager_installed),Toast.LENGTH_SHORT).show();
+                else {
+                    ActivityCompat.requestPermissions(MapActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, Properties.PERMISSION_TO_WRITE_EXTERNAL_STORAGE);
                 }
             }
         });
@@ -239,6 +244,20 @@ public class MapActivity extends AppCompatActivity
                     catch (IOException e) {
                         Toast.makeText(this, this.getString(R.string.unknown_error), Toast.LENGTH_SHORT).show();
                     }
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case Properties.PERMISSION_TO_WRITE_EXTERNAL_STORAGE:
+                if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(this,getString(R.string.write_external_storage_permission_granted),Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(this,getString(R.string.write_external_storage_permission_denied),Toast.LENGTH_LONG).show();
                 }
                 break;
         }
