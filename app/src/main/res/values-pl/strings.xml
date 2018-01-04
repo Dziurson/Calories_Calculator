@@ -54,4 +54,8 @@
     <string name="import_file">Zaimportuj Plik GPX lub KML</string>
     <string name="write_external_storage_permission_granted">Przyznano dostęp do wewnętrznej pamięci urządzenia.</string>
     <string name="write_external_storage_permission_denied">Nie przyznano dostępu do wewnętrznej pamięci urządzenia. W celu skorzystania z funkcjonalności importowania pliku należy przyznać dostęp.</string>
+    <string name="total_time">Całkowity czas</string>
+    <string name="nothing_to_share_no_file">Nie ma tu nic do udostępnienia. Załaduj plik w celu uzupełnienia danych.</string>
+    <string name="nothing_to_share_no_activity">Nie ma tu nic do udostępnienia. Rozpocznij aktywność aby uzupełnić informacje.</string>
+    <string name="activity_is_running">Aktywność jest uruchomiona. Aby udostępnić wyniki zatrzymaj aktuwność.</string>
 </resources>

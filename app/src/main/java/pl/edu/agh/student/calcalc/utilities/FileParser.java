@@ -19,7 +19,7 @@ import java.util.LinkedList;
  */
 
 public class FileParser {
-    public static LinkedList<Location> parseGpxFile(File file) throws XmlPullParserException, IOException {
+    public static LinkedList<Location> parseGpxFile(File file) throws XmlPullParserException, IOException, ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         boolean isNextElevation = false;
         boolean isNextTime = false;
@@ -38,11 +38,7 @@ public class FileParser {
             }
             if(isNextTime) {
                 isNextTime = false;
-                try {
-                    location.setTime(dateFormat.parse(parser.getText()).getTime());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                location.setTime(dateFormat.parse(parser.getText()).getTime());
             }
             switch (event) {
                 case XmlPullParser.START_TAG:
@@ -69,7 +65,7 @@ public class FileParser {
         return result;
     }
 
-    public static ArrayList<Location> parseKmlFile(File file) throws XmlPullParserException, IOException{
+    public static LinkedList<Location> parseKmlFile(File file) throws XmlPullParserException, IOException{
         XmlPullParserFactory xmlParserFactory = XmlPullParserFactory.newInstance();
         XmlPullParser parser = xmlParserFactory.newPullParser();
         boolean startParsing = false;
@@ -92,13 +88,22 @@ public class FileParser {
                     }
                     break;
             }
-            if(!(tag.compareToIgnoreCase("coordinates") == 0) && startParsing) {
-                String parts[] = tag.split(",");
-                if(parts.length == 3){
-                    //TODO: create location here
+            if(tag == null && startParsing) {
+                String parts[] = parser.getText().split("\n|\r|\n\r");
+                String locParts[];
+                for (String locString : parts) {
+                    locParts = locString.split(",");
+                    if (locParts.length == 3) {
+                        location = new Location("");
+                        location.setLatitude(Double.parseDouble(locParts[0]));
+                        location.setLongitude(Double.parseDouble(locParts[1]));
+                        location.setAltitude(Double.parseDouble(locParts[2]));
+                        result.add(location);
+                    }
                 }
             }
+            event = parser.next();
         }
-        return new ArrayList<>();
+        return result;
     }
 }

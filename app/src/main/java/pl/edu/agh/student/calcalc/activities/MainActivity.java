@@ -187,11 +187,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -209,65 +204,70 @@ public class MainActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
         }
         else if (id == R.id.dmi_share) {
-            double averageVelocity;
-            filename = getExternalStorageDirectory().getPath() + UserSettings.testDir + ((Long)new Date().getTime()).toString() + ".png";
-            if(totalTime == 0) {
-                averageVelocity = 0;
+            if(isTrackingActive) {
+                Toast.makeText(this,getString(R.string.activity_is_running),Toast.LENGTH_LONG).show();
+            }
+            else if (timerTextView.getText().toString().compareToIgnoreCase(getString(R.string.default_timer_value)) == 0) {
+                Toast.makeText(this,getString(R.string.nothing_to_share_no_activity),Toast.LENGTH_LONG).show();
             }
             else {
-                averageVelocity = (UserSettings.usedVelocity == VelocityUnit.VELOCITY_IN_KPH) ? totalDistance/totalTime*3.6 : totalDistance/totalTime;
-            }
-            View shareImageLayout = ((LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.share_image_layout, null);
-            String activityType = "";
-            if(calorieCalculator!= null) {
-                switch (calorieCalculator.getCurrentActivity()) {
-                    case WALKING:
-                        activityType = getString(R.string.activity_type_walking);
-                        break;
-                    case RUNNING:
-                        activityType = getString(R.string.activity_type_running);
-                        break;
+                double averageVelocity;
+                filename = getExternalStorageDirectory().getPath() + UserSettings.testDir + ((Long) new Date().getTime()).toString() + ".png";
+                if (totalTime == 0) {
+                    averageVelocity = 0;
+                } else {
+                    averageVelocity = (UserSettings.usedVelocity == VelocityUnit.VELOCITY_IN_KPH) ? totalDistance / totalTime * 3.6 : totalDistance / totalTime;
                 }
-            }
-            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_activity_type)).setText(activityType);
-            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_total_distance_value)).setText(String.format(Locale.getDefault(),"%.2f m",totalDistance));
-            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_average_velocity_value)).setText(String.format(Locale.getDefault(),"%.2f %s",averageVelocity,UserSettings.usedVelocity.getString(this)));
-            ((TextView)shareImageLayout.findViewById(R.id.share_image_layout_calories_burned_value)).setText(String.format(Locale.getDefault(),"%.2f %s",totalCalories,getString(R.string.kcal)));
-            shareImageLayout.setDrawingCacheEnabled(true);
-            shareImageLayout.buildDrawingCache();
-            Bitmap shareImage = Bitmap.createBitmap(800,400,Bitmap.Config.ARGB_8888);
-            Canvas canvas = new Canvas(shareImage);
-            shareImageLayout.measure(800,400);
-            shareImageLayout.layout(0,0,800,400);
-            shareImageLayout.draw(canvas);
-            FileOutputStream fos = null;
-            try {
-                fos = new FileOutputStream(filename);
-                shareImage.compress(Bitmap.CompressFormat.PNG,100,fos);
-            }
-            catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            finally {
-                try {
-                    if (fos != null) {
-                        fos.close();
+                View shareImageLayout = ((LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.share_image_layout, null);
+                String activityType = "";
+                if (calorieCalculator != null) {
+                    switch (calorieCalculator.getCurrentActivity()) {
+                        case WALKING:
+                            activityType = getString(R.string.activity_type_walking);
+                            break;
+                        case RUNNING:
+                            activityType = getString(R.string.activity_type_running);
+                            break;
                     }
                 }
-                catch (IOException exc) {
-                    exc.printStackTrace();
+                ((TextView) shareImageLayout.findViewById(R.id.share_image_layout_activity_type)).setText(activityType);
+                ((TextView) shareImageLayout.findViewById(R.id.share_image_layout_total_distance_value)).setText(String.format(Locale.getDefault(), "%.2f m", totalDistance));
+                ((TextView) shareImageLayout.findViewById(R.id.share_image_layout_average_velocity_value)).setText(String.format(Locale.getDefault(), "%.2f %s", averageVelocity, UserSettings.usedVelocity.getString(this)));
+                ((TextView) shareImageLayout.findViewById(R.id.share_image_layout_calories_burned_value)).setText(String.format(Locale.getDefault(), "%.2f %s", totalCalories, getString(R.string.kcal)));
+                ((TextView) shareImageLayout.findViewById(R.id.share_image_layout_total_time_value)).setText(timerTextView.getText());
+                shareImageLayout.setDrawingCacheEnabled(true);
+                shareImageLayout.buildDrawingCache();
+                Bitmap shareImage = Bitmap.createBitmap(800, 400, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(shareImage);
+                shareImageLayout.measure(800, 400);
+                shareImageLayout.layout(0, 0, 800, 400);
+                shareImageLayout.draw(canvas);
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(filename);
+                    shareImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                } finally {
+                    try {
+                        if (fos != null) {
+                            fos.close();
+                        }
+                    } catch (IOException exc) {
+                        exc.printStackTrace();
+                    }
                 }
-            }
-            File file = new File(filename);
-            try {
-                Intent shareIntent = new Intent();
-                shareIntent.setAction(Intent.ACTION_SEND);
-                shareIntent.putExtra(Intent.EXTRA_STREAM,Uri.fromFile(file));
-                shareIntent.setType("image/png");
-                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivityForResult(Intent.createChooser(shareIntent, "send"),SHARE_REQUEST_CODE);
-            } catch (Exception e) {
-                Toast.makeText(this,this.getString(R.string.no_sharing_app_found),Toast.LENGTH_SHORT).show();
+                File file = new File(filename);
+                try {
+                    Intent shareIntent = new Intent();
+                    shareIntent.setAction(Intent.ACTION_SEND);
+                    shareIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                    shareIntent.setType("image/png");
+                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivityForResult(Intent.createChooser(shareIntent, "send"), SHARE_REQUEST_CODE);
+                } catch (Exception e) {
+                    Toast.makeText(this, this.getString(R.string.no_sharing_app_found), Toast.LENGTH_SHORT).show();
+                }
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -279,9 +279,7 @@ public class MainActivity extends AppCompatActivity
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case Properties.PERMISSION_TO_ACCESS_FINE_LOCATION:
-                if(locationListener.isGPSEnabled()) {
                     locationListener.requestLocationData();
-                }
                 break;
         }
     }

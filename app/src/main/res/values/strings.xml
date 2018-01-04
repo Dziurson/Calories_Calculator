@@ -61,4 +61,10 @@
     <string name="write_external_storage_permission_granted">Write external storage permission granted.</string>
     <string name="write_external_storage_permission_denied">Write external storage permission denied. In order to use Import File functionality you must grant permission.</string>
     <string name="zero">0</string>
+    <string name="meters">m</string>
+    <string name="kilometers">km</string>
+    <string name="total_time">Total Time</string>
+    <string name="nothing_to_share_no_file">There is nothing to share. Load file to import any data.</string>
+    <string name="nothing_to_share_no_activity">There is nothing to share. Start activity to fill information.</string>
+    <string name="activity_is_running">Activity is running. To share results stop activity.</string>
 </resources>

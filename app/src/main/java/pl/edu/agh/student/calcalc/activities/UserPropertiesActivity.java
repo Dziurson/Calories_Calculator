@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -83,11 +84,6 @@ public class UserPropertiesActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -141,6 +137,17 @@ public class UserPropertiesActivity extends AppCompatActivity
 
         listAdapter = new UserPropertiesExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
+
+        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                for (int i = 0; i < listAdapter.getGroupCount(); i++) {
+                    if(i != groupPosition) {
+                        expListView.collapseGroup(i);
+                    }
+                }
+            }
+        });
     }
 
     @Override

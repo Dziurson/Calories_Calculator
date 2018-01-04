@@ -13,7 +13,7 @@
     android:backgroundTint="@color/colorLightBlue"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
+    <!--<ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,6 +32,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="user@email.com"
-        android:textColor="@color/colorWhite"/>
+        android:textColor="@color/colorWhite"/> -->
 
 </LinearLayout>

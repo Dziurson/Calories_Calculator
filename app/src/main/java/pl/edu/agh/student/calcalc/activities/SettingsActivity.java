@@ -91,11 +91,6 @@ public class SettingsActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -144,6 +139,17 @@ public class SettingsActivity extends AppCompatActivity
 
         listAdapter = new SettingsExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
+
+        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                for (int i = 0; i < listAdapter.getGroupCount(); i++) {
+                    if(i != groupPosition) {
+                        expListView.collapseGroup(i);
+                    }
+                }
+            }
+        });
     }
 
     @Override
