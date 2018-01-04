@@ -9,7 +9,9 @@ public enum ExpandableListViewGroup {
     USER_WEIGHT(R.layout.user_properties_expandable_list_group_user_weight,R.id.user_properties_group_user_weight_header,R.id.user_properties_group_user_weight_value,R.string.user_weight),
     USER_HEIGHT(R.layout.user_properties_expandable_list_group_user_height,R.id.user_properties_group_user_height_header,R.id.user_properties_group_user_height_value,R.string.user_height),
     USER_AGE(R.layout.user_properties_expandable_list_group_user_age,R.id.user_properties_group_user_age_header,R.id.user_properties_group_user_age_value,R.string.user_age),
-    USER_GENDER(R.layout.user_properties_expandable_list_group_user_gender,R.id.user_properties_group_user_gender_header,R.id.user_properties_group_user_gender_value,R.string.user_gender);
+    USER_GENDER(R.layout.user_properties_expandable_list_group_user_gender,R.id.user_properties_group_user_gender_header,R.id.user_properties_group_user_gender_value,R.string.user_gender),
+    INTERPOLATION(R.layout.settings_expandable_list_group_interpolation_enabled,R.id.settings_group_interpolation_enabled_header,R.id.settings_group_interpolation_enabled_value,R.string.interpolation_label),
+    ACTIVITY_TYPE(R.layout.user_properties_expandable_list_group_activity_type,R.id.user_properties_group_activity_type_header,R.id.user_properties_group_activity_type_value,R.string.activity_type_header);
 
     public final int stringResourceId;
     public final int headerResourceId;

@@ -81,6 +81,17 @@ public class FileSerializer {
         }
     }
 
+    public void addNewPoint(double latitude, double longitude, double altitude) {
+        try {
+            if(isGpxFileOpened) {
+                appendNewPoint(latitude, longitude, altitude);
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void startDocument() throws IOException{
         switch(currentExtension) {
             case GPX:
@@ -111,8 +122,22 @@ public class FileSerializer {
                 serializer.endTag(null, "trkpt");
                 break;
             case KML:
-                //TODO:Change to placemarks in future
                 serializer.text(StringHelper.concat(((Double) location.getLatitude()).toString(),",",((Double) location.getLongitude()).toString(),",",((Double) location.getAltitude()).toString(),"\r\n"));
+                break;
+        }
+    }
+
+    private void appendNewPoint(double latitude, double longitude, double altitude) throws IOException{
+        switch (currentExtension) {
+            case GPX:
+                serializer.startTag(null, "trkpt").attribute(null, "lat", ((Double) latitude).toString()).attribute(null, "lon", ((Double) longitude).toString());
+                serializer.startTag(null, "ele");
+                serializer.text(((Double) altitude).toString());
+                serializer.endTag(null, "ele");
+                serializer.endTag(null, "trkpt");
+                break;
+            case KML:
+                serializer.text(StringHelper.concat(((Double) latitude).toString(),",",((Double) longitude).toString(),",",((Double) altitude).toString(),"\r\n"));
                 break;
         }
     }

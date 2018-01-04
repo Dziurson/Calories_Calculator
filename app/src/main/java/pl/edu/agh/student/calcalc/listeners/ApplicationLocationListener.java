@@ -92,7 +92,7 @@ public class ApplicationLocationListener implements LocationListener {
 
     public void requestLocationData() {
         try {
-            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+            locManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 3, this);
         } catch (SecurityException ex) {
             Toast.makeText(Properties.mainActivity, ex.getMessage(), Toast.LENGTH_LONG).show();
         }

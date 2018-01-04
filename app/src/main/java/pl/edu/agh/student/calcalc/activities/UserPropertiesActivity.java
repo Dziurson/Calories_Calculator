@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ import pl.edu.agh.student.calcalc.adapters.UserPropertiesExpandableListAdapter;
 import pl.edu.agh.student.calcalc.controls.CustomExpandableListView;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewGroup;
+import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
 import pl.edu.agh.student.calcalc.types.Tuple;
 
@@ -44,6 +46,10 @@ public class UserPropertiesActivity extends AppCompatActivity
 
         navSideMenu = (NavigationView) findViewById(R.id.nav_view);
         navSideMenu.setNavigationItemSelectedListener(this);
+
+        MenuItem item = navSideMenu.getMenu().getItem(4);
+        item.setVisible(false);
+        prepareExpandableList();
 
         prepareExpandableList();
     }
@@ -78,11 +84,6 @@ public class UserPropertiesActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -96,16 +97,9 @@ public class UserPropertiesActivity extends AppCompatActivity
             ActivityHelper.findOrCreateActivity(this,MainActivity.class);
         } else if (id == R.id.dmi_map) {
             ActivityHelper.findOrCreateActivity(this,MapActivity.class);
-        } else if (id == R.id.dmi_properties) {
-
         } else if (id == R.id.dmi_settings) {
             ActivityHelper.findOrCreateActivity(this,SettingsActivity.class);
-        } else if (id == R.id.dmi_share) {
-
-        } else if (id == R.id.dmi_send) {
-
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -136,7 +130,29 @@ public class UserPropertiesActivity extends AppCompatActivity
         Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> userGenderEntry = new Tuple<>(ExpandableListViewGroup.USER_GENDER, userGenderChildren);
         listMap.add(userGenderEntry);
 
+        List<ExpandableListViewChild> activityTypeChidren = new ArrayList<>();
+        activityTypeChidren.add(ExpandableListViewChild.ACTIVITY_TYPE);
+        Tuple<ExpandableListViewGroup,List<ExpandableListViewChild>> activityTypeEntry = new Tuple<>(ExpandableListViewGroup.ACTIVITY_TYPE, activityTypeChidren);
+        listMap.add(activityTypeEntry);
+
         listAdapter = new UserPropertiesExpandableListAdapter(this, listMap);
         expListView.setAdapter(listAdapter);
+
+        expListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                for (int i = 0; i < listAdapter.getGroupCount(); i++) {
+                    if(i != groupPosition) {
+                        expListView.collapseGroup(i);
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        ActivityHelper.savePropertiesState(Properties.stateFile);
     }
 }

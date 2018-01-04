@@ -7,5 +7,7 @@ public enum ExpandableListViewChild {
     USER_HEIGHT,
     USER_GENDER,
     VELOCITY_UNITS,
-    MAP_POINTS
+    MAP_POINTS,
+    INTERPOLATION,
+    ACTIVITY_TYPE
 }

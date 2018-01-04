@@ -8,10 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import pl.edu.agh.student.calcalc.R;
+import pl.edu.agh.student.calcalc.activities.MainActivity;
+import pl.edu.agh.student.calcalc.enums.InterpolationState;
 import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.controls.CustomButton;
 import pl.edu.agh.student.calcalc.enums.ExpandableListViewChild;
@@ -41,6 +44,9 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             case MAP_POINTS:
                 convertView = groupInit(ExpandableListViewGroup.MAP_POINTS,UserSettings.delayBetweenPoints);
                 break;
+            case INTERPOLATION:
+                convertView = groupInit(ExpandableListViewGroup.INTERPOLATION,UserSettings.interpolationState);
+                break;
         }
         return convertView;
     }
@@ -57,7 +63,53 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
             case MAP_POINTS:
                 convertView = mapPointsChildInit(parent);
                 break;
+            case INTERPOLATION:
+                convertView = interpolationChildInit(parent);
+                break;
         }
+        return convertView;
+    }
+
+    private View interpolationChildInit(ViewGroup parent) {
+        View convertView = layoutFactory.inflate(R.layout.settings_expandable_list_child_interpolation_enabled, null);
+        final CustomButton enabledButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_interpolation_enabled);
+        final CustomButton disabledButton = (CustomButton) convertView.findViewById(R.id.settings_expandable_list_interpolation_disabled);
+        enabledButton.setFocusable(false);
+        disabledButton.setFocusable(false);
+        final TextView headerTextView = (TextView) parent.findViewById(R.id.settings_group_interpolation_enabled_value);
+        switch(UserSettings.interpolationState) {
+            case ENABLED:
+                enabledButton.setButtonSelected(true);
+                disabledButton.setButtonSelected(false);
+                break;
+            case DISABLED:
+                disabledButton.setButtonSelected(true);
+                enabledButton.setButtonSelected(false);
+                break;
+        }
+        headerTextView.setText(UserSettings.interpolationState.getString(context));
+        enabledButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(UserSettings.interpolationState == InterpolationState.ENABLED)) {
+                    enabledButton.setButtonSelected(true);
+                    disabledButton.setButtonSelected(false);
+                    UserSettings.interpolationState = InterpolationState.ENABLED;
+                    headerTextView.setText(UserSettings.interpolationState.getString(context));
+                }
+            }
+        });
+        disabledButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!(UserSettings.interpolationState == InterpolationState.DISABLED)) {
+                    disabledButton.setButtonSelected(true);
+                    enabledButton.setButtonSelected(false);
+                    UserSettings.interpolationState = InterpolationState.DISABLED;
+                    headerTextView.setText(UserSettings.interpolationState.getString(context));
+                }
+            }
+        });
         return convertView;
     }
 
@@ -125,22 +177,32 @@ public class SettingsExpandableListAdapter extends CustomExpandableListAdapter {
         gpxFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
-                    gpxFileTypeButton.setButtonSelected(true);
-                    kmlFileTypeButton.setButtonSelected(false);
-                    UserSettings.exportFileFormat = OutputFileFormat.GPX;
-                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                if(!MainActivity.isTrackingActive) {
+                    if (!(UserSettings.exportFileFormat == OutputFileFormat.GPX)) {
+                        gpxFileTypeButton.setButtonSelected(true);
+                        kmlFileTypeButton.setButtonSelected(false);
+                        UserSettings.exportFileFormat = OutputFileFormat.GPX;
+                        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                    }
+                }
+                else {
+                    Toast.makeText(context,context.getString(R.string.file_type_change_not_allowed),Toast.LENGTH_SHORT).show();
                 }
             }
         });
         kmlFileTypeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
-                    kmlFileTypeButton.setButtonSelected(true);
-                    gpxFileTypeButton.setButtonSelected(false);
-                    UserSettings.exportFileFormat = OutputFileFormat.KML;
-                    headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                if(!MainActivity.isTrackingActive) {
+                    if (!(UserSettings.exportFileFormat == OutputFileFormat.KML)) {
+                        kmlFileTypeButton.setButtonSelected(true);
+                        gpxFileTypeButton.setButtonSelected(false);
+                        UserSettings.exportFileFormat = OutputFileFormat.KML;
+                        headerTextView.setText(UserSettings.exportFileFormat.getString(context));
+                    }
+                }
+                else {
+                    Toast.makeText(context,context.getString(R.string.file_type_change_not_allowed),Toast.LENGTH_SHORT).show();
                 }
             }
         });

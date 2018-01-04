@@ -10,6 +10,7 @@
     <string name="longitude_label">Długość geograficzna</string>
     <string name="altitude_label">Wysokość</string>
     <string name="velocity_label">Prędkość</string>
+    <string name="average_velocity_label">Średnia prędkość</string>
     <string name="location_label">Lokalizacja</string>
     <string name="m_a_s_l">m n.p.m.</string>
     <string name="meters_per_second">m/s</string>
@@ -35,4 +36,26 @@
     <string name="user_gender">Płeć</string>
     <string name="gender_male">Mężczyzna</string>
     <string name="gender_female">Kobieta</string>
+    <string name="file_type_change_not_allowed">Zmiana typu pliku nie jest możliwa podczas trwania aktywności.</string>
+    <string name="no_sharing_app_found">Nie znaleziono żadnej aplikacji umożliwiającej udostępnianie treści.</string>
+    <string name="wrong_file_type_selected">Ten plik nie zawiera żadnych danych o trasie i aktywności.</string>
+    <string name="no_file_manager_installed">Nie znaleziono żadnego eksploratora plików.</string>
+    <string name="parsing_error">Wystąpił błąd podczas parsowania pliku.</string>
+    <string name="unknown_error">Coś poszło nie tak.</string>
+    <string name="calories_burned">Spalone kalorie</string>
+    <string name="enabled">Wł.</string>
+    <string name="disabled">Wył.</string>
+    <string name="interpolation_label">Interpolacja</string>
+    <string name="activity_type_running">Bieganie</string>
+    <string name="activity_type_walking">Chodzenie</string>
+    <string name="activity_type_header">Rodzaj Aktywności</string>
+    <string name="activity_stats">Statystyki Aktywności</string>
+    <string name="total_distance">Całkowity dystans</string>
+    <string name="import_file">Zaimportuj Plik GPX lub KML</string>
+    <string name="write_external_storage_permission_granted">Przyznano dostęp do wewnętrznej pamięci urządzenia.</string>
+    <string name="write_external_storage_permission_denied">Nie przyznano dostępu do wewnętrznej pamięci urządzenia. W celu skorzystania z funkcjonalności importowania pliku należy przyznać dostęp.</string>
+    <string name="total_time">Całkowity czas</string>
+    <string name="nothing_to_share_no_file">Nie ma tu nic do udostępnienia. Załaduj plik w celu uzupełnienia danych.</string>
+    <string name="nothing_to_share_no_activity">Nie ma tu nic do udostępnienia. Rozpocznij aktywność aby uzupełnić informacje.</string>
+    <string name="activity_is_running">Aktywność jest uruchomiona. Aby udostępnić wyniki zatrzymaj aktuwność.</string>
 </resources>
