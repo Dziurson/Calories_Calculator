@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 
 import pl.edu.agh.student.calcalc.activities.MainActivity;
+import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 
 
@@ -29,8 +30,8 @@ public class ActivityHelper {
         return ActivityCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static boolean savePropertiesState(String stateFile) {
-        File state = new File(stateFile);
+    public static boolean savePropertiesState(Activity activity) {
+        File state = new File(activity.getFilesDir(), Properties.stateFile);
         if(!state.exists()) {
             try {
                 state.createNewFile();

@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity
     private InterpolationState currentActivityInterpolationState;
     private double totalDistance = 0;
     private double totalTime= 0;
+    double pointDistance = 0;
     private String filename;
     DrawerLayout drawer;
 
@@ -310,6 +311,7 @@ public class MainActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
         Tuple<String, String> formattedLocationTuple = LocationHelper.format(location);
         totalDistance += (lastLocation != null) ? lastLocation.distanceTo(location) : 0;
+        pointDistance += (lastLocation != null) ? lastLocation.distanceTo(location) : 0;
         totalTime += (lastLocation != null) ? DateHelper.getInterval(new Date(location.getTime()),new Date(lastLocation.getTime()))/1000 : 1;
         if(isTrackingActive && calorieCalculator != null) {
             totalCalories += calorieCalculator.calculateCalories(location);
@@ -335,9 +337,11 @@ public class MainActivity extends AppCompatActivity
             }
         }
         if(googleMap != null) {
-            if(pointToDrawMarker <= 0 && UserSettings.delayBetweenPoints.getValue() != 0) {
-                googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).snippet(formattedLocationTuple.first + ";" + formattedLocationTuple.second + ";" + ((Double)location.getAltitude()).toString() + ";" + ((Double)location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString())).toString() + ";" + String.format(Locale.getDefault(),"%.2f",totalCalories)).icon(BitmapDescriptorFactory.fromResource(R.drawable.circle))); //TODO: REPLACE TEST WITH CALORIES FROM START
-                pointToDrawMarker = UserSettings.delayBetweenPoints.getValue();
+            if(UserSettings.delayBetweenPoints.getValue() != 0) {
+                if (pointDistance > UserSettings.delayBetweenPoints.getValue() * 100) {
+                    googleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).snippet(formattedLocationTuple.first + ";" + formattedLocationTuple.second + ";" + ((Double) location.getAltitude()).toString() + ";" + ((Double) location.getExtras().getDouble(VelocityUnit.VELOCITY_IN_KPH.toString())).toString() + ";" + String.format(Locale.getDefault(), "%.2f", totalCalories)).icon(BitmapDescriptorFactory.fromResource(R.drawable.circle)));
+                    pointDistance = 0;
+                }
             }
             if(lastLocation != null) {
                 googleMap.addPolyline(new PolylineOptions()
@@ -558,10 +562,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void restoreSavedState() {
-        File statefile = new File(Properties.stateFile);
-        if(statefile.exists() && !statefile.isDirectory()) {
+        File stateFile = new File(getFilesDir(),Properties.stateFile);
+        if(stateFile.exists() && !stateFile.isDirectory()) {
             try {
-                FileReader freader = new FileReader(statefile);
+                FileReader freader = new FileReader(stateFile);
                 BufferedReader reader = new BufferedReader(freader);
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -647,6 +651,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        ActivityHelper.savePropertiesState(Properties.stateFile);
+        ActivityHelper.savePropertiesState(this);
     }
 }

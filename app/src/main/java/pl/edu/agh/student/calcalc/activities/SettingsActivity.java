@@ -155,6 +155,6 @@ public class SettingsActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
-        ActivityHelper.savePropertiesState(Properties.stateFile);
+        ActivityHelper.savePropertiesState(this);
     }
 }

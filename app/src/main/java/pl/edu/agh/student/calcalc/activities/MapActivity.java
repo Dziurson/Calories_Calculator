@@ -43,8 +43,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.apache.commons.io.FilenameUtils;
@@ -66,6 +69,9 @@ import pl.edu.agh.student.calcalc.enums.VelocityUnit;
 import pl.edu.agh.student.calcalc.globals.Properties;
 import pl.edu.agh.student.calcalc.globals.UserSettings;
 import pl.edu.agh.student.calcalc.helpers.ActivityHelper;
+import pl.edu.agh.student.calcalc.helpers.LocationHelper;
+import pl.edu.agh.student.calcalc.helpers.StringHelper;
+import pl.edu.agh.student.calcalc.types.Tuple;
 import pl.edu.agh.student.calcalc.utilities.FileParser;
 
 import static android.os.Environment.getExternalStorageDirectory;
@@ -156,6 +162,31 @@ public class MapActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                View markerLayout = ((LayoutInflater) getSystemService(MainActivity.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.custom_map_marker, null);
+                String[] parts = marker.getSnippet().split(";");
+                if(parts[0] != null) {
+                    ((TextView) markerLayout.findViewById(R.id.custom_map_marker_longitude)).setText(parts[0]);
+                }
+                if(parts[1] != null) {
+                    ((TextView) markerLayout.findViewById(R.id.custom_map_marker_latitude)).setText(parts[1]);
+                }
+                if(parts[2] != null) {
+                    ((TextView) markerLayout.findViewById(R.id.custom_map_marker_altitude_value)).setText(StringHelper.concat(parts[2], " ", MapActivity.this.getString(R.string.m_a_s_l)));
+                }
+                if(parts[3] != null) {
+                    ((TextView) markerLayout.findViewById(R.id.custom_map_marker_burned_calories_value)).setText(StringHelper.concat(parts[3], " ", MapActivity.this.getString(R.string.kcal)));
+                }
+                return markerLayout;
+            }
+        });
     }
 
     @Override
@@ -266,6 +297,8 @@ public class MapActivity extends AppCompatActivity
             long totalTime = 0;
             double totalCalories = 0;
             double currentDistance = 0;
+            double pointDistance = 0;
+            Tuple<String, String> formattedLocationTuple;
             Location prevLocation = null;
             LatLng southWest = null;
             LatLng northEast = null;
@@ -278,11 +311,23 @@ public class MapActivity extends AppCompatActivity
                     totalTime += (location.getTime() - prevLocation.getTime());
                     totalCalories += Math.round(UserSettings.activityType.getCalories(prevLocation, location)*1000000.0)/1000000.0;
                     prevLocation = location;
+                    pointDistance += currentDistance;
                 }
                 else
                     prevLocation = location;
                 point = new LatLng(location.getLatitude(),location.getLongitude());
                 line.add(point);
+                if(UserSettings.delayBetweenPoints.getValue() != 0) {
+                    if (pointDistance > UserSettings.delayBetweenPoints.getValue() * 100) {
+                        formattedLocationTuple = LocationHelper.format(location);
+                        try {
+                            googleMap.addMarker(new MarkerOptions().position(point).snippet(formattedLocationTuple.first + ";" + formattedLocationTuple.second + ";" + String.format(Locale.getDefault(), "%.2f", location.getAltitude()) + ";" + String.format(Locale.getDefault(), "%.2f", totalCalories)).icon(BitmapDescriptorFactory.fromResource(R.drawable.dot)));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        pointDistance = 0;
+                    }
+                }
                 if(southWest != null) {
                     if(point.latitude < southWest.latitude){
                         southWest = new LatLng(point.latitude,southWest.longitude);
@@ -305,6 +350,7 @@ public class MapActivity extends AppCompatActivity
                 else {
                     northEast = new LatLng(location.getLatitude(),location.getLongitude());
                 }
+
             }
             line.color(getResources().getColor(R.color.colorAccent)).width(5);
             googleMap.addPolyline(line);
