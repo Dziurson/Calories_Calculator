@@ -46,8 +46,8 @@ public class SplineInterpolation {
         for (int i = 0; i < 3; i++) {
             d[i] = values.get(i + 1) - values.get(i);
         }
-        m1 = (10.0 * d[1] - 8.0 * d[0] - 2.0 * d[2]) / 5.0;
-        m2 = (8.0 * d[2] - 10.0 * d[1] + 2.0 * d[0]) / 5.0;
+        m1 = 3*(d[0]-d[1]);
+        m2 = 3*(d[1]-d[2]);
         a[0] = values.get(1);
         a[1] = d[1] - (2.0 * m1 + m2) / 6.0;
         a[2] = m1 / 2.0;
